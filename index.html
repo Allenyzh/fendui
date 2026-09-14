@@ -380,6 +380,11 @@
   .primary:hover { filter: brightness(1.08); }
   .primary:active { transform: translateY(1px); }
 
+  .primary.is-repeat {
+    background: #FCE3C5;
+    color: #8A481C;
+  }
+
   .primary, .ghost, .seg-face, .link-btn {
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
@@ -1094,7 +1099,10 @@
     countEl.textContent = players.length;
     matchEl.textContent = parseMatchLine(input.value);
     renderDetected(detected, groupCount(detected));
-    copyBtn.disabled = lastGroups.length === 0;
+    const hasGroups = lastGroups.length > 0;
+    copyBtn.disabled = !hasGroups;
+    splitBtn.textContent = hasGroups ? "再次随机分队" : "随机分队";
+    splitBtn.classList.toggle("is-repeat", hasGroups);
     clearBtn.disabled = input.value.length === 0;
   }
 
