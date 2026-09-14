@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>接龙分队</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+
+<style>
+  :root {
+    --paper:      #F4F5F1;
+    --surface:    #FFFFFF;
+    --surface-2:  #FAFBF8;
+    --ink:        #14181D;
+    --ink-2:      #545E6B;
+    --ink-3:      #8A949F;
+    --line:       #DDE0D9;
+    --line-soft:  #E9EBE5;
+    --accent:     #2A50C8;
+    --accent-ink: #FFFFFF;
+    --accent-soft:#E8EDFB;
+    --note:       #A85A2C;
+    --note-soft:  #F6E9DF;
+    --kit-white:  #FFFFFF;
+    --kit-blue:   #2A50C8;
+    --kit-red:    #C2413B;
+    --kit-black:  #23282F;
+    --kit-yellow: #DDAB33;
+    --kit-green:  #2F8F57;
+    --kit-orange: #D9762F;
+    --kit-purple: #7B4FC4;
+    --kit-gray:   #9AA1A9;
+    --kit-pink:   #D96A9A;
+    --kit-cyan:   #2A9BAE;
+    --shadow:     0 1px 2px rgba(20, 24, 29, .05), 0 8px 24px -16px rgba(20, 24, 29, .30);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:      #0E1217;
+      --surface:    #161B22;
+      --surface-2:  #1B212A;
+      --ink:        #E7EAEF;
+      --ink-2:      #99A4B1;
+      --ink-3:      #6B7684;
+      --line:       #272E38;
+      --line-soft:  #212832;
+      --accent:     #7E9CFF;
+      --accent-ink: #0E1217;
+      --accent-soft:#1A2340;
+      --note:       #E0A06B;
+      --note-soft:  #2A2118;
+      --kit-white:  #EDEFEA;
+      --kit-blue:   #4C74EE;
+      --kit-red:    #D45B54;
+      --kit-black:  #0A0D11;
+      --kit-yellow: #EFC661;
+      --kit-green:  #45A96D;
+      --kit-orange: #E88A46;
+      --kit-purple: #9B72E0;
+      --kit-gray:   #79828C;
+      --kit-pink:   #E585AE;
+      --kit-cyan:   #45B6C9;
+      --shadow:     0 1px 2px rgba(0, 0, 0, .40), 0 10px 28px -18px rgba(0, 0, 0, .80);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper:      #0E1217;
+    --surface:    #161B22;
+    --surface-2:  #1B212A;
+    --ink:        #E7EAEF;
+    --ink-2:      #99A4B1;
+    --ink-3:      #6B7684;
+    --line:       #272E38;
+    --line-soft:  #212832;
+    --accent:     #7E9CFF;
+    --accent-ink: #0E1217;
+    --accent-soft:#1A2340;
+    --note:       #E0A06B;
+    --note-soft:  #2A2118;
+    --kit-white:  #EDEFEA;
+    --kit-blue:   #4C74EE;
+    --kit-red:    #D45B54;
+    --kit-black:  #0A0D11;
+    --kit-yellow: #EFC661;
+    --kit-green:  #45A96D;
+    --kit-orange: #E88A46;
+    --kit-purple: #9B72E0;
+    --kit-gray:   #79828C;
+    --kit-pink:   #E585AE;
+    --kit-cyan:   #45B6C9;
+    --shadow:     0 1px 2px rgba(0, 0, 0, .40), 0 10px 28px -18px rgba(0, 0, 0, .80);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Noto Sans SC", -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  .wrap {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding-inline: 20px;
+    padding-block: 28px calc(56px + env(safe-area-inset-bottom));
+  }
+
+  /* ---------- header ---------- */
+
+  .masthead {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px 20px;
+    padding-bottom: 18px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 24px;
+  }
+
+  .masthead h1 {
+    font-family: "Barlow Condensed", "Noto Sans SC", sans-serif;
+    font-weight: 700;
+    font-size: 40px;
+    letter-spacing: .04em;
+    line-height: 1;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .masthead .tag {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .18em;
+    color: var(--ink-3);
+    text-transform: uppercase;
+  }
+
+  #match-line {
+    margin-left: auto;
+    font-size: 13px;
+    color: var(--ink-2);
+    max-width: 46ch;
+    text-align: right;
+  }
+
+  /* ---------- layout ---------- */
+
+  .board {
+    display: grid;
+    grid-template-columns: minmax(300px, 400px) 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+
+  @media (max-width: 860px) {
+    .board { grid-template-columns: 1fr; gap: 24px; }
+    #match-line { margin-left: 0; text-align: left; }
+  }
+
+  /* ---------- input side ---------- */
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .field-label {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: .12em;
+    color: var(--ink-3);
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 300px;
+    resize: vertical;
+    padding: 12px 13px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: var(--surface-2);
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 13.5px;
+    line-height: 1.75;
+    tab-size: 2;
+  }
+
+  textarea::placeholder {
+    color: var(--ink-3);
+    line-height: 1.8;
+  }
+
+  /* 空名单时点「随机分队」，抖一下输入框 */
+  textarea.nudge {
+    border-color: var(--note);
+    animation: fx-shake .32s ease;
+  }
+
+  .paste-hint {
+    margin: -6px 0 0;
+    font-size: 12.5px;
+    line-height: 1.65;
+    color: var(--note);
+  }
+
+  .paste-hint[hidden] { display: none; }
+
+  /* 自动复制失败时兜底：可以长按选中的纯文本 */
+  .raw {
+    margin: 16px 0 0;
+    padding: 12px 14px;
+    border: 1px solid var(--note);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 13px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    user-select: text;
+    -webkit-user-select: text;
+  }
+
+  .raw[hidden] { display: none; }
+
+  .link-btn:disabled {
+    opacity: .4;
+    cursor: default;
+    text-decoration: none;
+  }
+
+  textarea:focus-visible,
+  button:focus-visible,
+  input:focus-visible + .seg-face {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .count-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--ink-2);
+    margin-top: -6px;
+  }
+
+  .count-row strong {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    margin-inline: 2px;
+  }
+
+  .link-btn {
+    border: 0;
+    background: none;
+    padding: 4px 2px;
+    color: var(--ink-3);
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    border-radius: 4px;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .link-btn:hover { color: var(--ink); }
+
+  .rule { height: 1px; background: var(--line-soft); }
+
+  /* 从接龙里扫出来的队服颜色 */
+
+  .detected {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin: -4px 0 0;
+    font-size: 12.5px;
+    color: var(--ink-2);
+  }
+
+  .detected .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 9px 2px 7px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface-2);
+  }
+
+  .detected .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 1px solid rgba(128, 128, 128, .45);
+    flex: none;
+  }
+
+  .detected .muted { color: var(--ink-3); }
+
+  /* segmented control */
+
+  .seg {
+    display: flex;
+    gap: 6px;
+  }
+
+  .seg input {
+    position: absolute;
+    opacity: 0;
+    width: 1px; height: 1px;
+  }
+
+  .seg-face {
+    display: block;
+    padding: 7px 0;
+    min-width: 54px;
+    text-align: center;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--surface-2);
+    color: var(--ink-2);
+    font-family: "Barlow Condensed", "Noto Sans SC", sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .seg-face:hover { border-color: var(--ink-3); }
+
+  .seg input:checked + .seg-face {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .primary {
+    width: 100%;
+    padding: 12px;
+    border: 0;
+    border-radius: 7px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-family: "Barlow Condensed", "Noto Sans SC", sans-serif;
+    font-size: 19px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    cursor: pointer;
+  }
+  .primary:hover { filter: brightness(1.08); }
+  .primary:active { transform: translateY(1px); }
+
+  .primary, .ghost, .seg-face, .link-btn {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  .ghost:active, .seg-face:active { background: var(--accent-soft); }
+
+  /* ---------- results side ---------- */
+
+  .results-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+    min-height: 34px;
+  }
+
+  .results-head h2 {
+    font-family: "Barlow Condensed", "Noto Sans SC", sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    margin: 0;
+  }
+
+  .head-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  /* 平时只读给读屏软件，复制失败时才显示出来 */
+  #copy-status,
+  #paste-status {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  #copy-status.show {
+    position: static;
+    width: auto;
+    height: auto;
+    clip-path: none;
+    font-size: 12.5px;
+    color: var(--note);
+    text-align: right;
+  }
+
+  .ghost {
+    padding: 7px 14px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .ghost:hover { border-color: var(--ink-3); }
+  .ghost:disabled { opacity: .45; cursor: default; }
+
+  /* ---------- 复制 / 粘贴按钮的反馈状态 ---------- */
+
+  .paste-btn {
+    padding: 4px 11px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface-2);
+    color: var(--ink-2);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0;
+    cursor: pointer;
+    align-self: center;
+  }
+
+  .paste-btn:hover { border-color: var(--ink-3); color: var(--ink); }
+
+  .fx-btn {
+    position: relative;
+    transition: background .2s ease, border-color .2s ease, color .2s ease, transform .12s ease;
+  }
+
+  .fx-btn:not(:disabled):active { transform: translateY(1px) scale(.98); }
+
+  /* 两个状态叠在同一格里，按钮宽度不会跳 */
+  .fx-face { display: grid; }
+
+  .fx-label {
+    grid-area: 1 / 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    white-space: nowrap;
+    transition: opacity .18s ease, transform .18s ease;
+  }
+
+  .fx-done,
+  .fx-fail {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  .fx-btn.is-done .fx-idle,
+  .fx-btn.is-fail .fx-idle {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+
+  .fx-btn.is-done .fx-done,
+  .fx-btn.is-fail .fx-fail {
+    opacity: 1;
+    transform: none;
+  }
+
+  .fx-btn.is-done,
+  .fx-btn.is-done:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+    animation: fx-pop .34s ease;
+  }
+
+  .fx-btn.is-fail,
+  .fx-btn.is-fail:hover {
+    border-color: var(--note);
+    color: var(--note);
+    animation: fx-shake .32s ease;
+  }
+
+  /* 复制成功时向外扩散一圈 */
+  .fx-btn::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    border: 2px solid var(--accent);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .fx-btn.is-done::after { animation: fx-ring .6s ease-out; }
+
+  .tick {
+    stroke-dasharray: 18;
+    stroke-dashoffset: 18;
+    flex: none;
+  }
+
+  .fx-btn.is-done .tick { animation: tick-draw .34s .06s ease-out forwards; }
+
+  @keyframes fx-pop {
+    0%   { transform: scale(1); }
+    45%  { transform: scale(1.055); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes fx-ring {
+    from { opacity: .5; transform: scale(1); }
+    to   { opacity: 0;  transform: scale(1.32); }
+  }
+
+  @keyframes fx-shake {
+    0%, 100% { transform: translateX(0); }
+    25%      { transform: translateX(-4px); }
+    75%      { transform: translateX(4px); }
+  }
+
+  @keyframes tick-draw {
+    to { stroke-dashoffset: 0; }
+  }
+
+  #teams {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 16px;
+    align-items: start;
+  }
+
+  .team {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .team-head {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--line-soft);
+    background: var(--surface-2);
+  }
+
+  .swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid rgba(128, 128, 128, .45);
+    flex: none;
+  }
+
+  .team-name {
+    font-family: "Barlow Condensed", "Noto Sans SC", sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: .06em;
+  }
+
+  .team-size {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .team ol {
+    list-style: none;
+    margin: 0;
+    padding: 6px 14px 14px;
+    counter-reset: player;
+  }
+
+  .team li {
+    counter-increment: player;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 9px;
+    padding: 4px 0;
+    border-bottom: 1px dashed var(--line-soft);
+  }
+  .team li:last-child { border-bottom: 0; }
+
+  .team li::before {
+    content: counter(player);
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+    min-width: 15px;
+    text-align: right;
+    flex: none;
+  }
+
+  .player-name {
+    overflow-wrap: anywhere;
+  }
+
+  .note {
+    font-size: 11px;
+    padding: 1px 6px;
+    border-radius: 999px;
+    background: var(--note-soft);
+    color: var(--note);
+    white-space: nowrap;
+    flex: none;
+  }
+
+  .empty {
+    border: 1px dashed var(--line);
+    border-radius: 10px;
+    padding: 28px 20px;
+    color: var(--ink-2);
+    font-size: 14px;
+    background: var(--surface-2);
+  }
+  .empty code {
+    font-family: "Barlow Condensed", ui-monospace, monospace;
+    font-size: 15px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1px 6px;
+  }
+
+  /* ---------- 手机 ---------- */
+
+  @media (max-width: 860px) {
+    .wrap { padding-block: 20px calc(36px + env(safe-area-inset-bottom)); }
+
+    .masthead { padding-bottom: 14px; margin-bottom: 18px; }
+    .masthead h1 { font-size: 34px; }
+    #match-line { width: 100%; max-width: none; font-size: 12.5px; }
+
+    .panel { padding: 15px; gap: 12px; }
+
+    /* 16px：低于这个值 iOS Safari 聚焦时会整页放大 */
+    textarea { min-height: 190px; font-size: 16px; line-height: 1.7; }
+
+    .seg { gap: 8px; }
+    .seg label { flex: 1 1 0; }
+    .seg-face { min-width: 0; padding: 11px 0; }
+
+    .primary { padding: 14px; }
+    .ghost { padding: 10px 16px; }
+    .paste-btn { padding: 6px 14px; font-size: 12.5px; }
+    .link-btn { padding: 8px 2px; }
+
+    .results-head { margin-bottom: 12px; }
+  }
+
+  @media (max-width: 560px) {
+    .wrap { padding-inline: 16px; }
+
+    .masthead { gap: 6px 12px; }
+    .masthead h1 { font-size: 30px; }
+    .masthead .tag { font-size: 10px; }
+
+    /* 白队蓝队并排，方便现场对着念 */
+    #teams { grid-template-columns: repeat(auto-fit, minmax(146px, 1fr)); gap: 10px; }
+    .team-head { padding: 9px 11px; gap: 7px; }
+    .team-name { font-size: 16px; }
+    .team-size { font-size: 11px; }
+    .team ol { padding: 4px 11px 11px; }
+    .team li { font-size: 14px; gap: 3px 7px; padding: 5px 0; }
+    .note { font-size: 10px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+    .fx-btn.is-done .tick { stroke-dashoffset: 0; }
+  }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <h1>接龙分队</h1>
+    <span class="tag">Random Teams</span>
+    <p id="match-line"></p>
+  </header>
+
+  <div class="board">
+    <section class="panel">
+      <div class="field-label">
+        <label for="roster-input">接龙原文</label>
+        <span id="paste-status" role="status" aria-live="polite"></span>
+        <button type="button" class="paste-btn fx-btn" id="paste-btn">
+          <span class="fx-face">
+            <span class="fx-label fx-idle">粘贴</span>
+            <span class="fx-label fx-done" aria-hidden="true"><svg class="tick" viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.6 L6.4 12 L13 5"></path></svg>已粘贴</span>
+            <span class="fx-label fx-fail" aria-hidden="true">粘贴失败</span>
+          </span>
+        </button>
+      </div>
+
+      <textarea id="roster-input" spellcheck="false" autocapitalize="off" autocorrect="off"
+        placeholder="在微信里长按那条接龙消息 → 复制整条，
+然后原封不动地粘贴到这里，不用删改、也不用只挑名字。
+
+也可以直接点右上角的「粘贴」。"></textarea>
+
+      <p class="paste-hint" id="paste-hint" hidden></p>
+
+      <div class="count-row">
+        <span>识别到<strong id="player-count">0</strong>人报名</span>
+        <button type="button" class="link-btn" id="clear-btn">清空</button>
+      </div>
+
+      <div class="rule"></div>
+
+      <div class="field-label"><span>分成几队</span></div>
+      <div class="seg" id="group-seg">
+        <label><input type="radio" name="groups" id="groups-auto" value="auto" checked><span class="seg-face">按颜色</span></label>
+        <label><input type="radio" name="groups" id="groups-2" value="2"><span class="seg-face">2 队</span></label>
+        <label><input type="radio" name="groups" id="groups-3" value="3"><span class="seg-face">3 队</span></label>
+        <label><input type="radio" name="groups" id="groups-4" value="4"><span class="seg-face">4 队</span></label>
+      </div>
+
+      <p class="detected" id="detected"></p>
+
+      <button type="button" class="primary" id="split-btn">随机分队</button>
+    </section>
+
+    <section id="results">
+      <div class="results-head">
+        <h2>分队结果</h2>
+        <div class="head-actions">
+          <span id="copy-status" role="status" aria-live="polite"></span>
+          <button type="button" class="ghost fx-btn" id="copy-btn">
+            <span class="fx-face">
+              <span class="fx-label fx-idle">复制结果</span>
+              <span class="fx-label fx-done" aria-hidden="true"><svg class="tick" viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.6 L6.4 12 L13 5"></path></svg>已复制</span>
+              <span class="fx-label fx-fail" aria-hidden="true">复制失败</span>
+            </span>
+          </button>
+        </div>
+      </div>
+      <div id="teams"></div>
+      <pre class="raw" id="raw-result" hidden></pre>
+    </section>
+  </div>
+</div>
+
+<script>
+
+  // 接龙里可能出现的队服颜色。"浅色 / 深色" 是备注，不算颜色
+  const COLORS = [
+    { key: "white",  name: "白队", color: "var(--kit-white)",  words: ["白"] },
+    { key: "blue",   name: "蓝队", color: "var(--kit-blue)",   words: ["蓝"] },
+    { key: "red",    name: "红队", color: "var(--kit-red)",    words: ["红"] },
+    { key: "black",  name: "黑队", color: "var(--kit-black)",  words: ["黑"] },
+    { key: "yellow", name: "黄队", color: "var(--kit-yellow)", words: ["黄"] },
+    { key: "green",  name: "绿队", color: "var(--kit-green)",  words: ["绿"] },
+    { key: "orange", name: "橙队", color: "var(--kit-orange)", words: ["橙"] },
+    { key: "purple", name: "紫队", color: "var(--kit-purple)", words: ["紫"] },
+    { key: "gray",   name: "灰队", color: "var(--kit-gray)",   words: ["灰"] },
+    { key: "pink",   name: "粉队", color: "var(--kit-pink)",   words: ["粉"] },
+    { key: "cyan",   name: "青队", color: "var(--kit-cyan)",   words: ["青"] },
+  ];
+
+  // 扫不到颜色时的兜底顺序
+  const FALLBACK_KEYS = ["white", "blue", "red", "black"];
+  const MAX_GROUPS = 6;
+
+  const NOTE_RE = /^(.*?)[\s　]+(迟到|早退|半残|替补|机动|待定|请假|可能|带球|带水)$/;
+
+  // 半角、全角圆括号可混用；每段非空括号备注单独显示为 badge。
+  function parsePlayerNotes(player) {
+    const notes = [];
+    let name = player.replace(/[（(]([^()（）]*)[）)]/g, (whole, content) => {
+      const note = content.trim();
+      if (!note) return whole;
+      notes.push(note);
+      return "";
+    }).trim();
+
+    const match = name.match(NOTE_RE);
+    if (match) {
+      name = match[1].trim();
+      notes.push(match[2]);
+    }
+
+    return { name, notes };
+  }
+
+  // 从微信复制出来的接龙用 \r 或 \r\n 换行，还可能夹着零宽字符
+  function toLines(text) {
+    return text
+      .split(/\r\n|[\n\r\u2028\u2029]/)
+      .map((line) => line.replace(/[\u200B-\u200F\u2060\uFEFF]/g, "").trim());
+  }
+
+  // 全角数字换成半角，接龙里偶尔会出现
+  function halfWidth(text) {
+    return text.replace(/[０-９]/g, (char) =>
+      String.fromCharCode(char.charCodeAt(0) - 0xFEE0));
+  }
+
+  // 序号 + 分隔符 + 名字；分隔符可以是 . 、 ． , ， : ： ) ） 。 或一个空格
+  const ROSTER_RE = /^(\d{1,3})\s*(?:[.、．,，:：)）。]|\s)\s*(\S.*)$/;
+
+  const HEADER_RE = /^#|接龙|报名|截止|上衣|请准备/;
+
+  // 识别接龙中的所有人
+  function parsePlayers(text) {
+    const lines = toLines(text).filter(Boolean);
+
+    const numbered = lines
+      .map((line) => halfWidth(line).match(ROSTER_RE))
+      .filter(Boolean)
+      .map((match) => match[2].trim());
+
+    if (numbered.length) return numbered;
+
+    // 一个序号都没有时，回落成「一行一个名字」，跳过开头的说明行
+    const plain = lines.filter((line) => !HEADER_RE.test(line));
+
+    return plain.length >= 2 ? plain : [];
+  }
+
+  // Fisher-Yates 随机洗牌
+  function shuffle(array) {
+    const result = [...array];
+    for (let i = result.length - 1; i > 0; i--) {
+      const randomIndex = Math.floor(Math.random() * (i + 1));
+      [result[i], result[randomIndex]] = [result[randomIndex], result[i]];
+    }
+    return result;
+  }
+
+  // 随机分组
+  function groupPlayers(players, groupCount) {
+    if (groupCount <= 0) throw new Error("groupCount 必须大于 0");
+
+    const shuffledPlayers = shuffle(players);
+    const groups = Array.from({ length: groupCount }, () => []);
+
+    shuffledPlayers.forEach((player, index) => {
+      groups[index % groupCount].push(player);
+    });
+
+    return groups;
+  }
+
+  // 格式化输出（用于复制）
+  function formatGroups(groups, kits) {
+    return groups
+      .map((group, groupIndex) => {
+        const groupName = kits[groupIndex].name;
+
+        const players = group
+          .map((player, playerIndex) => `${playerIndex + 1}. ${player}`)
+          .join("\n");
+
+        return `${groupName}（${group.length}人）\n${players}`;
+      })
+      .join("\n\n");
+  }
+
+  // 扫描队服颜色：只看非报名行，避免把人名里的"白""红"当成队服
+  function detectColors(text) {
+    const players = parsePlayers(text);
+
+    // 只在报名行之外找颜色，避免把人名里的「白」「红」当成队服
+    const notice = toLines(text)
+      .filter((line) => line && players.indexOf(line) < 0 && !ROSTER_RE.test(halfWidth(line)))
+      .join("\n");
+
+    const hits = [];
+
+    COLORS.forEach((color) => {
+      const at = color.words
+        .map((word) => notice.indexOf(word))
+        .filter((index) => index >= 0);
+
+      if (at.length) hits.push({ color, at: Math.min(...at) });
+    });
+
+    return hits
+      .sort((a, b) => a.at - b.at)
+      .map((hit) => hit.color)
+      .slice(0, MAX_GROUPS);
+  }
+
+  // 凑够 groupCount 个队伍：先用扫到的颜色，不够再按兜底顺序补
+  function buildKits(detected, groupCount) {
+    const kits = detected.slice(0, groupCount);
+    const used = new Set(kits.map((kit) => kit.key));
+
+    FALLBACK_KEYS.concat(COLORS.map((color) => color.key)).forEach((key) => {
+      if (kits.length >= groupCount || used.has(key)) return;
+
+      used.add(key);
+      kits.push(COLORS.find((color) => color.key === key));
+    });
+
+    while (kits.length < groupCount) {
+      kits.push({
+        name: `${String.fromCharCode(65 + kits.length)}组`,
+        color: "var(--ink-3)",
+      });
+    }
+
+    return kits;
+  }
+
+  // 接龙开头的场次信息
+  function parseMatchLine(text) {
+    const line = toLines(text).find((l) => l.trim().startsWith("#"));
+    return line ? line.trim().replace(/^#\s*接龙\s*/, "") : "";
+  }
+
+  const input = document.getElementById("roster-input");
+  const countEl = document.getElementById("player-count");
+  const teamsEl = document.getElementById("teams");
+  const matchEl = document.getElementById("match-line");
+  const copyBtn = document.getElementById("copy-btn");
+  const copyStatus = document.getElementById("copy-status");
+  const detectedEl = document.getElementById("detected");
+  const pasteBtn = document.getElementById("paste-btn");
+  const pasteStatus = document.getElementById("paste-status");
+  const splitBtn = document.getElementById("split-btn");
+  const clearBtn = document.getElementById("clear-btn");
+  const pasteHint = document.getElementById("paste-hint");
+  const rawEl = document.getElementById("raw-result");
+  const PLACEHOLDER = input.placeholder;
+
+  const CAN_READ = !!(navigator.clipboard && navigator.clipboard.readText);
+  const CAN_WRITE = !!(navigator.clipboard && navigator.clipboard.writeText);
+  const IS_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+  let lastGroups = [];
+  let lastKits = [];
+
+  // "按颜色"时队数 = 扫到的颜色数，扫不到就还是两队
+  function groupCount(detected) {
+    const mode = document.querySelector('input[name="groups"]:checked').value;
+
+    if (mode !== "auto") return Number(mode);
+
+    return detected.length >= 2 ? detected.length : 2;
+  }
+
+  function renderDetected(detected, groupCount) {
+    detectedEl.innerHTML = "";
+
+    if (!input.value.trim()) {
+      detectedEl.innerHTML =
+        '<span class="muted">粘贴接龙后，自动按里面写的队服颜色分队</span>';
+      return;
+    }
+
+    if (!detected.length) {
+      detectedEl.innerHTML =
+        '<span class="muted">接龙里没写队服颜色，按白 / 蓝分</span>';
+      return;
+    }
+
+    const lead = document.createElement("span");
+    lead.className = "muted";
+    lead.textContent = "接龙里写了";
+    detectedEl.appendChild(lead);
+
+    detected.forEach((kit) => {
+      const chip = document.createElement("span");
+      chip.className = "chip";
+      chip.innerHTML = `<span class="dot" style="background:${kit.color}"></span>`;
+      chip.appendChild(document.createTextNode(kit.name.replace("队", "")));
+      detectedEl.appendChild(chip);
+    });
+
+    const tail = document.createElement("span");
+    tail.className = "muted";
+    tail.textContent = `→ 分 ${groupCount} 队`;
+    detectedEl.appendChild(tail);
+  }
+
+  function renderTeams(groups, kits) {
+    teamsEl.innerHTML = "";
+
+    if (!groups.length) {
+      if (!input.value.trim()) {
+        teamsEl.innerHTML =
+          '<div class="empty">还没有名单。把微信接龙整条粘到左边就行 —— 带序号的行会被认成报名的人，例如 <code>1. Rain</code>。</div>';
+        return;
+      }
+
+      const lines = toLines(input.value).filter(Boolean);
+      const sample = lines.length > 1 ? lines[1] : lines[0] || "";
+
+      const box = document.createElement("div");
+      box.className = "empty";
+      box.appendChild(document.createTextNode("这段文字里认不出报名的人。读到的第 2 行是："));
+
+      const code = document.createElement("code");
+      code.textContent = sample.slice(0, 40) || "(空)";
+      box.appendChild(code);
+
+      box.appendChild(document.createTextNode(
+        "。需要写成 1. Rain 这样：序号 + 分隔符 + 名字。"));
+
+      teamsEl.appendChild(box);
+      return;
+    }
+
+    groups.forEach((group, index) => {
+      const kit = kits[index];
+
+      const card = document.createElement("div");
+      card.className = "team";
+
+      const head = document.createElement("div");
+      head.className = "team-head";
+      head.innerHTML =
+        `<span class="swatch" style="background:${kit.color}"></span>` +
+        `<span class="team-name"></span>` +
+        `<span class="team-size">${group.length} 人</span>`;
+      head.querySelector(".team-name").textContent = kit.name;
+      card.appendChild(head);
+
+      const list = document.createElement("ol");
+      group.forEach((player) => {
+        const item = document.createElement("li");
+        const parsed = parsePlayerNotes(player);
+
+        const name = document.createElement("span");
+        name.className = "player-name";
+        name.textContent = parsed.name;
+        item.appendChild(name);
+
+        parsed.notes.forEach((text) => {
+          const note = document.createElement("span");
+          note.className = "note";
+          note.textContent = text;
+          item.appendChild(note);
+        });
+        list.appendChild(item);
+      });
+      card.appendChild(list);
+
+      teamsEl.appendChild(card);
+    });
+  }
+
+  function refreshCount() {
+    const players = parsePlayers(input.value);
+    const detected = detectColors(input.value);
+
+    countEl.textContent = players.length;
+    matchEl.textContent = parseMatchLine(input.value);
+    renderDetected(detected, groupCount(detected));
+    copyBtn.disabled = lastGroups.length === 0;
+    clearBtn.disabled = input.value.length === 0;
+  }
+
+  function split() {
+    const players = parsePlayers(input.value);
+    const detected = detectColors(input.value);
+    const count = groupCount(detected);
+
+    lastKits = buildKits(detected, count);
+    lastGroups = players.length ? groupPlayers(players, count) : [];
+
+    hideRaw();
+    renderTeams(lastGroups, lastKits);
+    refreshCount();
+  }
+
+  // 手机上结果在输入框下方，分完队直接带过去
+  function revealResults() {
+    if (!window.matchMedia("(max-width: 860px)").matches) return;
+    const smooth = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    document.getElementById("results").scrollIntoView({
+      behavior: smooth ? "smooth" : "auto",
+      block: "start",
+    });
+  }
+
+  // http 访问下 navigator.clipboard 不存在，execCommand 还能用，再不行就让用户长按
+  function legacyCopy(text) {
+    const helper = document.createElement("textarea");
+    helper.value = text;
+    helper.setAttribute("readonly", "");
+    helper.style.cssText =
+      "position:fixed;top:0;left:0;width:1px;height:1px;padding:0;border:0;opacity:0;font-size:16px;";
+    document.body.appendChild(helper);
+
+    const selection = window.getSelection();
+    const saved = selection && selection.rangeCount ? selection.getRangeAt(0) : null;
+
+    if (IS_IOS) {
+      // iOS 上 select() 不管用，要自己做 Range
+      helper.contentEditable = "true";
+      helper.readOnly = false;
+
+      const range = document.createRange();
+      range.selectNodeContents(helper);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+
+    helper.focus();
+    helper.setSelectionRange(0, text.length);
+
+    let ok = false;
+    try {
+      ok = document.execCommand("copy");
+    } catch (err) {
+      ok = false;
+    }
+
+    helper.remove();
+
+    if (saved && selection) {
+      selection.removeAllRanges();
+      selection.addRange(saved);
+    }
+
+    return ok;
+  }
+
+  function showRaw(text) {
+    rawEl.textContent = text;
+    rawEl.hidden = false;
+
+    const range = document.createRange();
+    range.selectNodeContents(rawEl);
+
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+
+    rawEl.scrollIntoView({ block: "nearest" });
+  }
+
+  function hideRaw() {
+    rawEl.hidden = true;
+    rawEl.textContent = "";
+  }
+
+  async function copyResult() {
+    if (!lastGroups.length) return;
+    const text = formatGroups(lastGroups, lastKits);
+
+    if (CAN_WRITE) {
+      try {
+        await navigator.clipboard.writeText(text);
+        hideRaw();
+        signal(copyBtn, copyStatus, "done", "已复制到剪贴板");
+        return;
+      } catch (err) {
+        // 继续往下回落
+      }
+    }
+
+    if (legacyCopy(text)) {
+      hideRaw();
+      signal(copyBtn, copyStatus, "done", "已复制到剪贴板");
+      return;
+    }
+
+    showRaw(text);
+    signal(copyBtn, copyStatus, "fail", "自动复制被拦了，文本已选中，长按选「拷贝」", true);
+  }
+
+  const signalTimers = new WeakMap();
+
+  function signal(btn, status, state, message, showOnFail) {
+    clearTimeout(signalTimers.get(btn));
+
+    // 先清干净，连点两次才会重新播一遍动画
+    btn.classList.remove("is-done", "is-fail");
+    void btn.offsetWidth;
+
+    btn.classList.add(state === "fail" ? "is-fail" : "is-done");
+    status.textContent = message;
+    status.classList.toggle("show", state === "fail" && showOnFail === true);
+
+    if (navigator.vibrate) navigator.vibrate(state === "fail" ? [18, 40, 18] : 14);
+
+    signalTimers.set(btn, setTimeout(() => {
+      btn.classList.remove("is-done", "is-fail");
+      status.classList.remove("show");
+      status.textContent = "";
+    }, state === "fail" ? 3200 : 1800));
+  }
+
+  function blockedReason() {
+    return window.isSecureContext
+      ? "这个浏览器不让网页读剪贴板"
+      : "当前是 http 访问，浏览器只在 https 或 localhost 下才允许读剪贴板";
+  }
+
+  function showPasteHint(message) {
+    pasteHint.textContent = message;
+    pasteHint.hidden = false;
+  }
+
+  // 读剪贴板：Safari 会先弹一次确认，Firefox 和 http 访问直接没有这个 API
+  async function pasteRoster() {
+    if (!CAN_READ) {
+      signal(pasteBtn, pasteStatus, "fail", blockedReason());
+      showPasteHint(blockedReason() + " —— 请在上面的输入框里长按，选「粘贴」。");
+      input.focus();
+      return;
+    }
+
+    try {
+      const text = await navigator.clipboard.readText();
+
+      if (!text.trim()) {
+        signal(pasteBtn, pasteStatus, "fail", "剪贴板是空的");
+        return;
+      }
+
+      input.value = text;
+      split();
+      signal(pasteBtn, pasteStatus, "done", "已粘贴接龙");
+    } catch (err) {
+      signal(pasteBtn, pasteStatus, "fail", "剪贴板读取被拒绝，请手动粘贴");
+      showPasteHint("剪贴板读取被拒绝 —— 请在上面的输入框里长按，选「粘贴」。");
+      input.focus();
+    }
+  }
+
+  // 名单是空的时候点「随机分队」，抖一下告诉用户该往哪填
+  function nudgeInput() {
+    renderTeams([], []);
+    input.focus();
+    input.classList.remove("nudge");
+    void input.offsetWidth;
+    input.classList.add("nudge");
+
+    if (navigator.vibrate) navigator.vibrate([18, 40, 18]);
+    setTimeout(() => input.classList.remove("nudge"), 400);
+  }
+
+  input.addEventListener("input", () => {
+    if (input.value.trim()) pasteHint.hidden = true;
+    refreshCount();
+  });
+  splitBtn.addEventListener("click", () => {
+    if (!parsePlayers(input.value).length) {
+      nudgeInput();
+      return;
+    }
+
+    input.blur();
+    split();
+    revealResults();
+  });
+  copyBtn.addEventListener("click", copyResult);
+  pasteBtn.addEventListener("click", pasteRoster);
+  clearBtn.addEventListener("click", () => {
+    input.value = "";
+    lastGroups = [];
+    renderTeams([], []);
+    refreshCount();
+    input.focus();
+  });
+  document.getElementById("group-seg").addEventListener("change", split);
+
+  // http 访问下剪贴板按钮必然失效，进页面就说清楚，别让人点了以为坏了
+  if (!CAN_READ) {
+    showPasteHint(blockedReason() + " —— 请在输入框里长按，选「粘贴」。");
+  }
+
+  split();
+</script>
+</body>
+</html>
