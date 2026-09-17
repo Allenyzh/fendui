@@ -1307,12 +1307,23 @@
       return;
     }
 
+    gtag("event", "split_teams", {
+      player_count: parsePlayers(input.value).length,
+      group_count: groupCount(detectColors(input.value)),
+    });
+
     input.blur();
     split();
     revealResults();
   });
-  copyBtn.addEventListener("click", copyResult);
-  pasteBtn.addEventListener("click", pasteRoster);
+  copyBtn.addEventListener("click", () => {
+    gtag("event", "copy_result");
+    copyResult();
+  });
+  pasteBtn.addEventListener("click", () => {
+    gtag("event", "paste_roster");
+    pasteRoster();
+  });
   clearBtn.addEventListener("click", () => {
     input.value = "";
     lastGroups = [];
