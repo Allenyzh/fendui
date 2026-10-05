@@ -269,6 +269,16 @@
     margin-top: -6px;
   }
 
+  .count-summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 2px 10px;
+  }
+
+  .count-summary span { white-space: nowrap; }
+  .count-row > button { flex: none; }
+
   .count-row strong {
     font-family: "Barlow Condensed", sans-serif;
     font-size: 20px;
@@ -291,6 +301,96 @@
     text-underline-offset: 3px;
   }
   .link-btn:hover { color: var(--ink); }
+
+  .attendance-panel {
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: var(--surface-2);
+    overflow: hidden;
+  }
+
+  .attendance-panel[hidden] { display: none; }
+
+  .attendance-panel summary {
+    padding: 10px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .attendance-panel summary:focus-visible,
+  .attendance-row input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .attendance-help {
+    margin: 0;
+    padding: 0 12px 10px;
+    color: var(--ink-2);
+    font-size: 12px;
+  }
+
+  .attendance-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 272px;
+    overflow-y: auto;
+    border-top: 1px solid var(--line-soft);
+    overscroll-behavior: contain;
+  }
+
+  .attendance-list li + li { border-top: 1px solid var(--line-soft); }
+
+  .attendance-row {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 46px;
+    padding: 9px 12px;
+    cursor: pointer;
+  }
+
+  .attendance-row:hover { background: var(--accent-soft); }
+  .attendance-row.is-excluded { background: var(--note-soft); }
+
+  .attendance-row input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--accent);
+    flex: none;
+  }
+
+  .attendance-number {
+    min-width: 17px;
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    color: var(--ink-3);
+    flex: none;
+  }
+
+  .attendance-name {
+    min-width: 0;
+    font-size: 13px;
+    overflow-wrap: anywhere;
+  }
+
+  .attendance-state {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--ink-3);
+    white-space: nowrap;
+    flex: none;
+  }
+
+  .is-excluded .attendance-state { color: var(--note); }
+
+  .attendance-actions {
+    padding: 3px 12px;
+    border-top: 1px solid var(--line-soft);
+  }
 
   .rule { height: 1px; background: var(--line-soft); }
 
@@ -379,6 +479,7 @@
   }
   .primary:hover { filter: brightness(1.08); }
   .primary:active { transform: translateY(1px); }
+  .primary:disabled { opacity: .45; cursor: default; filter: none; transform: none; }
 
   .primary.is-repeat {
     background: #FCE3C5;
@@ -760,9 +861,22 @@
       <p class="paste-hint" id="paste-hint" hidden></p>
 
       <div class="count-row">
-        <span>识别到<strong id="player-count">0</strong>人报名</span>
+        <div class="count-summary" role="status" aria-live="polite" aria-atomic="true">
+          <span>报名<strong id="player-count">0</strong>人</span>
+          <span>参与分队<strong id="attending-count">0</strong>人</span>
+          <span>不参加<strong id="excluded-count">0</strong>人</span>
+        </div>
         <button type="button" class="link-btn" id="clear-btn">清空</button>
       </div>
+
+      <details class="attendance-panel" id="attendance-panel" open hidden>
+        <summary>调整出场名单</summary>
+        <p class="attendance-help" id="attendance-help">默认全部参加。取消勾选可标记本场不参加，再次勾选即可恢复。</p>
+        <ol class="attendance-list" id="attendance-list" aria-label="出场名单"></ol>
+        <div class="attendance-actions">
+          <button type="button" class="link-btn" id="include-all-btn">全部参加</button>
+        </div>
+      </details>
 
       <div class="rule"></div>
 
@@ -970,6 +1084,11 @@
 
   const input = document.getElementById("roster-input");
   const countEl = document.getElementById("player-count");
+  const attendingCountEl = document.getElementById("attending-count");
+  const excludedCountEl = document.getElementById("excluded-count");
+  const attendancePanel = document.getElementById("attendance-panel");
+  const attendanceList = document.getElementById("attendance-list");
+  const includeAllBtn = document.getElementById("include-all-btn");
   const teamsEl = document.getElementById("teams");
   const matchEl = document.getElementById("match-line");
   const copyBtn = document.getElementById("copy-btn");
@@ -990,6 +1109,120 @@
 
   let lastGroups = [];
   let lastKits = [];
+  let attendance = [];
+  const attendanceHistory = [];
+  let needsResplit = false;
+  let resetAttendanceOnInput = false;
+  let resultRevision = 0;
+
+  // 先匹配完整条目，再匹配姓名，避免重名人员换顺序时选择跟错人。
+  // 本场历史保留到清空或重新粘贴，局部输入时短暂删掉姓名也不会丢失选择。
+  function syncAttendance() {
+    const players = parsePlayers(input.value);
+    if (players.length === attendance.length &&
+        players.every((player, index) => player === attendance[index].player)) {
+      if (!players.length) renderAttendance();
+      return;
+    }
+
+    const current = new Set(attendance);
+    const candidates = attendance.concat(attendanceHistory.filter((entry) => !current.has(entry)));
+    const used = new Set();
+    const next = players.map((player) => {
+      const entry = candidates.find((candidate) => !used.has(candidate) && candidate.player === player);
+      if (entry) used.add(entry);
+      return entry;
+    });
+
+    attendance = players.map((player, index) => {
+      let entry = next[index];
+      if (!entry) {
+        const name = parsePlayerNotes(player).name || player;
+        entry = candidates.find((candidate) => !used.has(candidate) &&
+          (parsePlayerNotes(candidate.player).name || candidate.player) === name);
+        if (entry) used.add(entry);
+      }
+      if (!entry) {
+        entry = { player, included: true };
+        attendanceHistory.push(entry);
+      }
+      entry.player = player;
+      return entry;
+    });
+    renderAttendance();
+  }
+
+  function attendingPlayers() {
+    return attendance.filter((entry) => entry.included).map((entry) => entry.player);
+  }
+
+  function resetAttendance() {
+    attendance = [];
+    attendanceHistory.length = 0;
+  }
+
+  function renderAttendance() {
+    attendanceList.replaceChildren();
+    attendancePanel.hidden = attendance.length === 0;
+
+    attendance.forEach((entry, index) => {
+      const item = document.createElement("li");
+      const label = document.createElement("label");
+      label.className = "attendance-row";
+      label.classList.toggle("is-excluded", !entry.included);
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.checked = entry.included;
+      checkbox.dataset.index = index;
+      checkbox.setAttribute("aria-label", `${index + 1}. ${entry.player}，参与分队`);
+      checkbox.setAttribute("aria-describedby", "attendance-help");
+
+      const number = document.createElement("span");
+      number.className = "attendance-number";
+      number.textContent = index + 1;
+      number.setAttribute("aria-hidden", "true");
+
+      const name = document.createElement("span");
+      name.className = "attendance-name";
+      name.textContent = entry.player;
+
+      const state = document.createElement("span");
+      state.className = "attendance-state";
+      state.textContent = entry.included ? "参加" : "本场不参加";
+      state.setAttribute("aria-hidden", "true");
+
+      label.append(checkbox, number, name, state);
+      item.appendChild(label);
+      attendanceList.appendChild(item);
+    });
+  }
+
+  function resetCopyFeedback() {
+    clearTimeout(signalTimers.get(copyBtn));
+    copyBtn.classList.remove("is-done", "is-fail");
+    copyStatus.textContent = "";
+    copyStatus.classList.remove("show");
+  }
+
+  function invalidateResults() {
+    resultRevision++;
+    needsResplit = needsResplit || lastGroups.length > 0;
+    lastGroups = [];
+    lastKits = [];
+    hideRaw();
+    resetCopyFeedback();
+    renderTeams([], []);
+    refreshCount();
+  }
+
+  function rosterChanged() {
+    if (resetAttendanceOnInput) resetAttendance();
+    resetAttendanceOnInput = false;
+    if (input.value.trim()) pasteHint.hidden = true;
+    syncAttendance();
+    invalidateResults();
+  }
 
   // "按颜色"时队数 = 扫到的颜色数，扫不到就还是两队
   function groupCount(detected) {
@@ -1041,6 +1274,19 @@
       if (!input.value.trim()) {
         teamsEl.innerHTML =
           '<div class="empty">还没有名单。把微信接龙整条粘到左边就行 —— 带序号的行会被认成报名的人，例如 <code>1. Rain</code>。</div>';
+        return;
+      }
+
+      if (attendance.length) {
+        const box = document.createElement("div");
+        box.className = "empty";
+        box.setAttribute("role", "status");
+        box.textContent = !attendingPlayers().length
+          ? "当前没有人参与分队。请在出场名单中勾选参加的人。"
+          : needsResplit
+            ? "名单已变更，请重新分队。"
+            : "出场名单已准备好，确认参加的人后点击「随机分队」。";
+        teamsEl.appendChild(box);
         return;
       }
 
@@ -1102,28 +1348,36 @@
   }
 
   function refreshCount() {
-    const players = parsePlayers(input.value);
     const detected = detectColors(input.value);
+    const attending = attendingPlayers().length;
 
-    countEl.textContent = players.length;
+    countEl.textContent = attendance.length;
+    attendingCountEl.textContent = attending;
+    excludedCountEl.textContent = attendance.length - attending;
+    includeAllBtn.disabled = attending === attendance.length;
     matchEl.textContent = parseMatchLine(input.value);
     renderDetected(detected, groupCount(detected));
     const hasGroups = lastGroups.length > 0;
     copyBtn.disabled = !hasGroups;
-    splitBtn.textContent = hasGroups ? "再次随机分队" : "随机分队";
+    splitBtn.textContent = hasGroups ? "再次随机分队" : needsResplit ? "重新分队" : "随机分队";
+    splitBtn.disabled = attendance.length > 0 && attending === 0;
     splitBtn.classList.toggle("is-repeat", hasGroups);
     clearBtn.disabled = input.value.length === 0;
   }
 
   function split() {
-    const players = parsePlayers(input.value);
+    resultRevision++;
+    syncAttendance();
+    const players = attendingPlayers();
     const detected = detectColors(input.value);
     const count = groupCount(detected);
 
     lastKits = buildKits(detected, count);
     lastGroups = players.length ? groupPlayers(players, count) : [];
+    needsResplit = false;
 
     hideRaw();
+    resetCopyFeedback();
     renderTeams(lastGroups, lastKits);
     refreshCount();
   }
@@ -1203,10 +1457,12 @@
   async function copyResult() {
     if (!lastGroups.length) return;
     const text = formatGroups(lastGroups, lastKits);
+    const revision = resultRevision;
 
     if (CAN_WRITE) {
       try {
         await navigator.clipboard.writeText(text);
+        if (revision !== resultRevision) return;
         hideRaw();
         signal(copyBtn, copyStatus, "done", "已复制到剪贴板");
         return;
@@ -1215,6 +1471,7 @@
       }
     }
 
+    if (revision !== resultRevision) return;
     if (legacyCopy(text)) {
       hideRaw();
       signal(copyBtn, copyStatus, "done", "已复制到剪贴板");
@@ -1275,8 +1532,9 @@
         return;
       }
 
+      resetAttendance();
       input.value = text;
-      split();
+      rosterChanged();
       signal(pasteBtn, pasteStatus, "done", "已粘贴接龙");
     } catch (err) {
       signal(pasteBtn, pasteStatus, "fail", "剪贴板读取被拒绝，请手动粘贴");
@@ -1297,18 +1555,37 @@
     setTimeout(() => input.classList.remove("nudge"), 400);
   }
 
-  input.addEventListener("input", () => {
-    if (input.value.trim()) pasteHint.hidden = true;
-    refreshCount();
+  // 整条替换粘贴视为新接龙；普通编辑保留仍在名单里的选择。
+  input.addEventListener("paste", (event) => {
+    resetAttendanceOnInput = input.selectionStart === 0 &&
+      input.selectionEnd === input.value.length &&
+      !!event.clipboardData?.getData("text");
+  });
+  input.addEventListener("input", rosterChanged);
+  attendanceList.addEventListener("change", (event) => {
+    const checkbox = event.target;
+    if (!checkbox.matches('input[type="checkbox"]')) return;
+    const entry = attendance[Number(checkbox.dataset.index)];
+    entry.included = checkbox.checked;
+    const label = checkbox.closest("label");
+    label.classList.toggle("is-excluded", !entry.included);
+    label.querySelector(".attendance-state").textContent = entry.included ? "参加" : "本场不参加";
+    invalidateResults();
+  });
+  includeAllBtn.addEventListener("click", () => {
+    attendanceHistory.forEach((entry) => { entry.included = true; });
+    renderAttendance();
+    invalidateResults();
   });
   splitBtn.addEventListener("click", () => {
     if (!parsePlayers(input.value).length) {
       nudgeInput();
       return;
     }
+    if (!attendingPlayers().length) return;
 
     gtag("event", "split_teams", {
-      player_count: parsePlayers(input.value).length,
+      player_count: attendingPlayers().length,
       group_count: groupCount(detectColors(input.value)),
     });
 
@@ -1326,9 +1603,11 @@
   });
   clearBtn.addEventListener("click", () => {
     input.value = "";
+    resetAttendance();
+    needsResplit = false;
     lastGroups = [];
-    renderTeams([], []);
-    refreshCount();
+    renderAttendance();
+    invalidateResults();
     input.focus();
   });
   document.getElementById("group-seg").addEventListener("change", split);
