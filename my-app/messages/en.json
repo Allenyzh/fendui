@@ -1,0 +1,127 @@
+{
+  "App": {
+    "title": "Team Split",
+    "subtitle": "Random Teams",
+    "language": "Language"
+  },
+  "Feedback": {
+    "paste": "Paste",
+    "pasteDone": "Pasted",
+    "pasteFail": "Paste manually",
+    "clipboardUnavailable": "This browser does not allow clipboard access",
+    "insecureContext": "Clipboard access requires HTTPS or localhost",
+    "clipboardEmpty": "The clipboard is empty",
+    "pasted": "Signup list pasted",
+    "pasteDenied": "Clipboard access was denied. Please paste manually.",
+    "pasteManualUnavailable": "This browser does not allow clipboard access. Use Paste in the input box.",
+    "pasteManualInsecure": "Clipboard access requires HTTPS or localhost. Use Paste in the input box.",
+    "pasteManualDenied": "Clipboard access was denied. Use Paste in the input box.",
+    "copied": "Copied to the clipboard",
+    "copyManual": "Automatic copying was blocked. The text is selected; use your device’s Copy command."
+  },
+  "Kits": {
+    "colors": {
+      "white": "White",
+      "blue": "Blue",
+      "red": "Red",
+      "black": "Black",
+      "yellow": "Yellow",
+      "green": "Green",
+      "orange": "Orange",
+      "purple": "Purple",
+      "gray": "Gray",
+      "pink": "Pink",
+      "cyan": "Cyan"
+    },
+    "teams": {
+      "white": "White Team",
+      "blue": "Blue Team",
+      "red": "Red Team",
+      "black": "Black Team",
+      "yellow": "Yellow Team",
+      "green": "Green Team",
+      "orange": "Orange Team",
+      "purple": "Purple Team",
+      "gray": "Gray Team",
+      "pink": "Pink Team",
+      "cyan": "Cyan Team"
+    },
+    "fallback": "Team {letter}",
+    "copyHeading": "{name} ({count, plural, one {# player} other {# players}})"
+  },
+  "Guide": {
+    "eyebrow": "Features",
+    "title": "How to split teams",
+    "intro": "Paste the full signup list, confirm who is playing, then split into random teams.",
+    "close": "Close the feature guide",
+    "attendance": {
+      "title": "Choose who is playing",
+      "new": "New",
+      "description": "Someone signed up but can’t make it? Uncheck their name to mark them as sitting out. The original list stays intact. Only checked players are assigned and copied. You’ll be prompted to split again after changing the lineup.",
+      "example": "Example player counts",
+      "registered": "{count, plural, one {# signed up} other {# signed up}}",
+      "included": "{count, plural, one {# playing} other {# playing}}",
+      "excluded": "{count, plural, one {# sitting out} other {# sitting out}}"
+    },
+    "featuresLabel": "Available features",
+    "paste": {
+      "title": "Paste the whole list",
+      "description": "Paste a WeChat signup list to detect player names. Common numbering formats work, or enter one name per line."
+    },
+    "split": {
+      "title": "Split by shirt color or team count",
+      "description": "Detect shirt colors from the signup text, or choose 2, 3 or 4 teams. Players are distributed as evenly as possible. Click again to reshuffle."
+    },
+    "notes": {
+      "title": "Keep player notes",
+      "description": "Late arrivals, early departures and notes in parentheses appear beside each name and stay in the copied results."
+    },
+    "copy": {
+      "title": "Copy and share the results",
+      "description": "Copy team names, player counts and lineups with one click. If automatic copying fails, select the displayed text and copy it manually."
+    },
+    "dismiss": "Got it, let’s split teams",
+    "reopenHint": "Tap the cookie icon at the bottom right to open this guide again.",
+    "open": "Open the feature guide",
+    "openTitle": "View the feature guide"
+  },
+  "Roster": {
+    "label": "Signup message",
+    "placeholder": "In WeChat, press and hold the signup message → copy the whole message.\nPaste it here as it is; no need to edit it or select just the names.\n\nYou can also use the Paste button above.",
+    "registeredCount": "{count, plural, one {<strong>#</strong> player signed up} other {<strong>#</strong> players signed up}}",
+    "attendingCount": "{count, plural, one {<strong>#</strong> player playing} other {<strong>#</strong> players playing}}",
+    "excludedCount": "{count, plural, one {<strong>#</strong> player sitting out} other {<strong>#</strong> players sitting out}}",
+    "clear": "Clear",
+    "groupLabel": "Number of teams",
+    "automaticGroups": "By color",
+    "teamCount": "{count, plural, one {# team} other {# teams}}",
+    "detectPrompt": "Paste the signup list to split by the shirt colors in the message.",
+    "defaultColors": "No shirt colors found. Teams will use white and blue.",
+    "detectedColors": "Shirt colors: <colors></colors> → {count, plural, one {# team} other {# teams}}",
+    "split": "Split into random teams",
+    "resplit": "Split teams again",
+    "splitAgain": "Reshuffle teams"
+  },
+  "Attendance": {
+    "title": "Choose who is playing",
+    "help": "Everyone is included by default. Uncheck someone to mark them as sitting out; check them again to include them.",
+    "listLabel": "Player lineup",
+    "playerLabel": "{number}. {player}, include in teams",
+    "included": "Playing",
+    "excluded": "Sitting out",
+    "includeAll": "Include everyone"
+  },
+  "Results": {
+    "title": "Teams",
+    "copy": "Copy results",
+    "copyDone": "Copied",
+    "copyFail": "Copy failed",
+    "emptyRoster": "No list yet. Paste the whole WeChat signup message into the input box. Numbered lines are recognized as players, for example <code>1. Rain</code>.",
+    "noAttendees": "No players are included. Check the players who are taking part in the lineup.",
+    "rosterChanged": "The lineup has changed. Please split the teams again.",
+    "readyToSplit": "The lineup is ready. Confirm who is playing, then select “Split into random teams”.",
+    "unrecognized": "No players were recognized in this text. One line reads: <code>{sample}</code>. Use a number, a separator and a name, for example 1. Rain.",
+    "emptyLine": "(empty)",
+    "playerCount": "{count, plural, one {# player} other {# players}}"
+  }
+}

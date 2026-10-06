@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+/* Preserve the original inclusive breakpoints and system/manual theme behavior. */
+@custom-variant mobile (@media (width <= 860px));
+@custom-variant compact (@media (width <= 560px));
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme="light"]), :root:not([data-theme="light"]) *) {
+      @slot;
+    }
+  }
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-line: var(--line);
+  --color-line-soft: var(--line-soft);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-note: var(--note);
+  --color-note-soft: var(--note-soft);
+  --shadow-panel: var(--panel-shadow);
+  --font-sans: "Noto Sans SC", -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-display: "Barlow Condensed", "Noto Sans SC", sans-serif;
+  --font-condensed: "Barlow Condensed", sans-serif;
+  --font-code: "Barlow Condensed", ui-monospace, monospace;
+}
+
+@theme {
+  --animate-fx-pop: fx-pop .34s ease;
+  --animate-fx-ring: fx-ring .6s ease-out;
+  --animate-fx-shake: fx-shake .32s ease;
+  --animate-tick-draw: tick-draw .34s .06s ease-out forwards;
+  --animate-feature-enter: feature-enter .22s ease-out;
+
+  @keyframes fx-pop {
+    0%, 100% { transform: scale(1); }
+    45% { transform: scale(1.055); }
+  }
+  @keyframes fx-ring {
+    from { opacity: .5; transform: scale(1); }
+    to { opacity: 0; transform: scale(1.32); }
+  }
+  @keyframes fx-shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+  }
+  @keyframes tick-draw {
+    to { stroke-dashoffset: 0; }
+  }
+  @keyframes feature-enter {
+    from { opacity: 0; transform: translateY(8px) scale(.98); }
+    to { opacity: 1; transform: none; }
+  }
+}
