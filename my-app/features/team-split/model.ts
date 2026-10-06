@@ -1,9 +1,14 @@
-export type Kit = {
-  key?: string;
-  name: string;
+export type ColorKey =
+  | "white" | "blue" | "red" | "black" | "yellow" | "green"
+  | "orange" | "purple" | "gray" | "pink" | "cyan";
+
+type ColorKit = {
+  key: ColorKey;
   color: string;
-  words?: string[];
+  words: string[];
 };
+
+export type Kit = ColorKit | { key: "custom"; letter: string; color: string };
 
 export type GroupMode = "auto" | "2" | "3" | "4";
 
@@ -18,21 +23,21 @@ export type AttendanceState = {
   history: AttendanceEntry[];
 };
 
-const COLORS = [
-  { key: "white", name: "白队", color: "var(--kit-white)", words: ["白"] },
-  { key: "blue", name: "蓝队", color: "var(--kit-blue)", words: ["蓝"] },
-  { key: "red", name: "红队", color: "var(--kit-red)", words: ["红"] },
-  { key: "black", name: "黑队", color: "var(--kit-black)", words: ["黑"] },
-  { key: "yellow", name: "黄队", color: "var(--kit-yellow)", words: ["黄"] },
-  { key: "green", name: "绿队", color: "var(--kit-green)", words: ["绿"] },
-  { key: "orange", name: "橙队", color: "var(--kit-orange)", words: ["橙"] },
-  { key: "purple", name: "紫队", color: "var(--kit-purple)", words: ["紫"] },
-  { key: "gray", name: "灰队", color: "var(--kit-gray)", words: ["灰"] },
-  { key: "pink", name: "粉队", color: "var(--kit-pink)", words: ["粉"] },
-  { key: "cyan", name: "青队", color: "var(--kit-cyan)", words: ["青"] },
+const COLORS: ColorKit[] = [
+  { key: "white", color: "var(--kit-white)", words: ["白"] },
+  { key: "blue", color: "var(--kit-blue)", words: ["蓝"] },
+  { key: "red", color: "var(--kit-red)", words: ["红"] },
+  { key: "black", color: "var(--kit-black)", words: ["黑"] },
+  { key: "yellow", color: "var(--kit-yellow)", words: ["黄"] },
+  { key: "green", color: "var(--kit-green)", words: ["绿"] },
+  { key: "orange", color: "var(--kit-orange)", words: ["橙"] },
+  { key: "purple", color: "var(--kit-purple)", words: ["紫"] },
+  { key: "gray", color: "var(--kit-gray)", words: ["灰"] },
+  { key: "pink", color: "var(--kit-pink)", words: ["粉"] },
+  { key: "cyan", color: "var(--kit-cyan)", words: ["青"] },
 ];
 
-const FALLBACK_KEYS = ["white", "blue", "red", "black"];
+const FALLBACK_KEYS: ColorKey[] = ["white", "blue", "red", "black"];
 const MAX_GROUPS = 6;
 const NOTE_RE =
   /^(.*?)[\s　]+(迟到|早退|半残|替补|机动|待定|请假|可能|带球|带水)$/;
@@ -104,14 +109,18 @@ export function groupPlayers(players: string[], groupCount: number) {
   return groups;
 }
 
-export function formatGroups(groups: string[][], kits: Kit[]) {
+export function formatGroups(
+  groups: string[][],
+  kits: Kit[],
+  formatHeading: (kit: Kit, count: number) => string,
+) {
   return groups
     .map((group, groupIndex) => {
-      const groupName = kits[groupIndex].name;
+      const heading = formatHeading(kits[groupIndex], group.length);
       const players = group
         .map((player, playerIndex) => `${playerIndex + 1}. ${player}`)
         .join("\n");
-      return `${groupName}（${group.length}人）\n${players}`;
+      return `${heading}\n${players}`;
     })
     .join("\n\n");
 }
@@ -151,16 +160,12 @@ export function buildKits(detected: Kit[], groupCount: number) {
 
   while (kits.length < groupCount) {
     kits.push({
-      name: `${String.fromCharCode(65 + kits.length)}组`,
+      key: "custom",
+      letter: String.fromCharCode(65 + kits.length),
       color: "var(--ink-3)",
     });
   }
   return kits;
-}
-
-export function parseMatchLine(text: string) {
-  const line = toLines(text).find((value) => value.trim().startsWith("#"));
-  return line ? line.trim().replace(/^#\s*接龙\s*/, "") : "";
 }
 
 export function getGroupCount(detected: Kit[], mode: GroupMode) {

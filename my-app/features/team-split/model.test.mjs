@@ -8,7 +8,6 @@ import {
   getGroupCount,
   groupPlayers,
   halfWidth,
-  parseMatchLine,
   parsePlayerNotes,
   parsePlayers,
   syncAttendance,
@@ -44,7 +43,8 @@ test("kit detection excludes player names and keeps notice order and six-team ca
   const detected = detectColors("#接龙 红蓝白黑黄绿橙上衣\n1. 小王\n2. 小李");
   assert.deepEqual(detected.map((kit) => kit.key), ["red", "blue", "white", "black", "yellow", "green"]);
   assert.deepEqual(buildKits(detected.slice(0, 1), 4).map((kit) => kit.key), ["red", "white", "blue", "black"]);
-  assert.equal(buildKits([], 12).at(-1).name, "L组");
+  assert.equal(buildKits([], 12).at(-1).letter, "L");
+  assert.equal(buildKits([], 12).at(-1).key, "custom");
   assert.equal(getGroupCount([], "auto"), 2);
   assert.equal(getGroupCount(detected, "auto"), 6);
   assert.equal(getGroupCount(detected, "3"), 3);
@@ -56,9 +56,8 @@ test("grouping preserves every occurrence, balances teams, and keeps notes in co
   assert.deepEqual(groups.map((group) => group.length), [3, 2, 2]);
   assert.deepEqual(groups.flat().sort(), [...players].sort());
   assert.throws(() => groupPlayers(players, 0), { message: "groupCount 必须大于 0" });
-  assert.equal(formatGroups([["甲", "乙（迟到）"], []], buildKits([], 2)), "白队（2人）\n1. 甲\n2. 乙（迟到）\n\n蓝队（0人）\n");
-  assert.equal(parseMatchLine("说明\n# 接龙 周六 18:00\n1. 甲"), "周六 18:00");
-  assert.equal(parseMatchLine("#其他场次\n1. 甲"), "#其他场次");
+  const labels = { white: "White team", blue: "Blue team" };
+  assert.equal(formatGroups([["甲", "乙（迟到）"], []], buildKits([], 2), (kit, count) => `${labels[kit.key]} (${count} players)`), "White team (2 players)\n1. 甲\n2. 乙（迟到）\n\nBlue team (0 players)\n");
 });
 
 test("attendance reserves full entries before name matching after reordering", () => {

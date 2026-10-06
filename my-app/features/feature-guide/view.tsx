@@ -1,9 +1,11 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useFeatureGuideController } from "./controller";
 import { focusRing, primaryButton } from "@/features/team-split/styles";
 
 export default function FeatureGuide() {
+  const t = useTranslations("Guide");
   const {
     dialogRef,
     launcherRef,
@@ -34,22 +36,22 @@ export default function FeatureGuide() {
       >
         <header className="relative flex-none border-b border-line-soft pt-6 pr-15 pb-4.5 pl-6 compact:pt-5 compact:pr-14 compact:pb-4 compact:pl-4.5">
           <p className="mb-1.5 text-[11px] font-medium tracking-[.14em] text-accent">
-            功能介绍
+            {t("eyebrow")}
           </p>
           <h2
             className="text-[23px] leading-[1.4] font-bold compact:text-[21px]"
             id="feature-title"
           >
-            接龙分队使用指南
+            {t("title")}
           </h2>
           <p className="mt-2.25 text-[13px] text-ink-2" id="feature-intro">
-            粘贴完整接龙，确认出场名单，再随机分队。
+            {t("intro")}
           </p>
           <button
             type="button"
             className={`absolute top-4 right-3.5 grid size-10 cursor-pointer place-items-center rounded-full border-0 bg-surface-2 p-0 text-ink-2 hover:bg-accent-soft hover:text-accent ${focusRing}`}
             id="feature-close-btn"
-            aria-label="关闭功能介绍"
+            aria-label={t("close")}
             autoFocus
             ref={closeButtonRef}
             onClick={dismissGuide}
@@ -77,26 +79,26 @@ export default function FeatureGuide() {
               className="mb-2 flex flex-wrap items-center gap-2 text-[16px] font-bold"
               id="feature-attendance-title"
             >
-              调整出场名单{" "}
+              {t("attendance.title")}{" "}
               <span className="rounded-sm bg-accent px-1.75 py-0.5 text-[10px] font-medium text-accent-ink">
-                新增
+                {t("attendance.new")}
               </span>
             </h3>
             <p className="text-[13px] leading-[1.8] text-ink-2">
-              有人报名但确定不来？取消勾选即可标记「本场不参加」，原始接龙保留。分队和复制只包含勾选的人，名单变更后会提示重新分队。
+              {t("attendance.description")}
             </p>
             <div
               className="mt-3 flex flex-wrap gap-x-3 gap-y-1.5 text-[12px] font-medium text-accent"
-              aria-label="人数统计示例"
+              aria-label={t("attendance.example")}
             >
-              <span>报名 21 人</span>
-              <span>参与分队 19 人</span>
-              <span>不参加 2 人</span>
+              <span>{t("attendance.registered", { count: 21 })}</span>
+              <span>{t("attendance.included", { count: 19 })}</span>
+              <span>{t("attendance.excluded", { count: 2 })}</span>
             </div>
           </section>
           <ul
             className="mt-5 grid list-none gap-4 p-0 [&_h3]:mb-0.75 [&_h3]:text-[14px] [&_h3]:font-medium [&_p]:text-[12.5px] [&_p]:leading-[1.75] [&_p]:text-ink-2"
-            aria-label="已有功能"
+            aria-label={t("featuresLabel")}
           >
             <li className="flex items-start gap-3">
               <span
@@ -106,9 +108,9 @@ export default function FeatureGuide() {
                 01
               </span>
               <div>
-                <h3>整条粘贴，自动识别</h3>
+                <h3>{t("paste.title")}</h3>
                 <p>
-                  直接粘贴微信接龙，识别人名和场次信息。支持常见编号格式，也可以一行一个名字。
+                  {t("paste.description")}
                 </p>
               </div>
             </li>
@@ -120,10 +122,9 @@ export default function FeatureGuide() {
                 02
               </span>
               <div>
-                <h3>按队服颜色或队数随机分队</h3>
+                <h3>{t("split.title")}</h3>
                 <p>
-                  自动识别队服颜色，也可选择 2、3、4
-                  队，尽量均分人数；再次点击可以重新随机。
+                  {t("split.description")}
                 </p>
               </div>
             </li>
@@ -135,9 +136,9 @@ export default function FeatureGuide() {
                 03
               </span>
               <div>
-                <h3>球员备注一起保留</h3>
+                <h3>{t("notes.title")}</h3>
                 <p>
-                  迟到、早退和括号里的备注会显示在名字旁，复制结果时也会保留。
+                  {t("notes.description")}
                 </p>
               </div>
             </li>
@@ -149,9 +150,9 @@ export default function FeatureGuide() {
                 04
               </span>
               <div>
-                <h3>复制结果，发回群里</h3>
+                <h3>{t("copy.title")}</h3>
                 <p>
-                  一键复制带队名、人数和球员名单的结果。自动复制失败时，可选取显示的文本手动复制。
+                  {t("copy.description")}
                 </p>
               </div>
             </li>
@@ -165,10 +166,10 @@ export default function FeatureGuide() {
             ref={dismissButtonRef}
             onClick={dismissGuide}
           >
-            知道了，开始分队
+            {t("dismiss")}
           </button>
           <p className="mt-2.5 text-center text-[11.5px] text-ink-3">
-            关闭后，点右下角的 Cookie 图标可再次查看。
+            {t("reopenHint")}
           </p>
         </footer>
       </dialog>
@@ -177,11 +178,11 @@ export default function FeatureGuide() {
         type="button"
         className={`fixed right-[calc(18px+env(safe-area-inset-right))] bottom-[calc(18px+env(safe-area-inset-bottom))] z-20 grid size-13.5 cursor-pointer touch-manipulation place-items-center rounded-full border border-line bg-note-soft p-0 text-note shadow-[0_4px_18px_rgba(0,0,0,.16)] transition-[transform,box-shadow] duration-160 ease-[ease] [-webkit-tap-highlight-color:transparent] [[hidden]]:hidden hover:shadow-[0_6px_22px_rgba(0,0,0,.22)] hover:transform-[translateY(-2px)] active:transform-[scale(.95)] motion-reduce:animate-none motion-reduce:transition-none ${focusRing}`}
         id="feature-launcher"
-        aria-label="打开功能介绍"
+        aria-label={t("open")}
         aria-haspopup="dialog"
         aria-controls="feature-dialog"
         aria-expanded="false"
-        title="查看功能介绍"
+        title={t("openTitle")}
         hidden
         ref={launcherRef}
         onClick={openGuide}

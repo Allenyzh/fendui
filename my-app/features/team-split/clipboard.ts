@@ -1,8 +1,8 @@
 // Browser IO stays outside the model; keep the original iOS / HTTP fallback.
-export function blockedReason() {
+export function blockedReason(): "clipboardUnavailable" | "insecureContext" {
   return window.isSecureContext
-    ? "这个浏览器不让网页读剪贴板"
-    : "当前是 http 访问，浏览器只在 https 或 localhost 下才允许读剪贴板";
+    ? "clipboardUnavailable"
+    : "insecureContext";
 }
 
 export function legacyCopy(text: string) {

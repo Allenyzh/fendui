@@ -146,14 +146,6 @@
     text-transform: uppercase;
   }
 
-  #match-line {
-    margin-left: auto;
-    font-size: 13px;
-    color: var(--ink-2);
-    max-width: 46ch;
-    text-align: right;
-  }
-
   /* ---------- layout ---------- */
 
   .board {
@@ -165,7 +157,6 @@
 
   @media (max-width: 860px) {
     .board { grid-template-columns: 1fr; gap: 24px; }
-    #match-line { margin-left: 0; text-align: left; }
   }
 
   /* ---------- input side ---------- */
@@ -984,7 +975,6 @@
 
     .masthead { padding-bottom: 14px; margin-bottom: 18px; }
     .masthead h1 { font-size: 34px; }
-    #match-line { width: 100%; max-width: none; font-size: 12.5px; }
 
     .panel { padding: 15px; gap: 12px; }
 
@@ -1041,7 +1031,6 @@
   <header class="masthead">
     <h1>接龙分队</h1>
     <span class="tag">Random Teams</span>
-    <p id="match-line"></p>
   </header>
 
   <div class="board">
@@ -1137,7 +1126,7 @@
       </div>
     </section>
     <ul class="feature-list" aria-label="已有功能">
-      <li><span class="feature-number" aria-hidden="true">01</span><div><h3>整条粘贴，自动识别</h3><p>直接粘贴微信接龙，识别人名和场次信息。支持常见编号格式，也可以一行一个名字。</p></div></li>
+      <li><span class="feature-number" aria-hidden="true">01</span><div><h3>整条粘贴，自动识别</h3><p>直接粘贴微信接龙，识别人名。支持常见编号格式，也可以一行一个名字。</p></div></li>
       <li><span class="feature-number" aria-hidden="true">02</span><div><h3>按队服颜色或队数随机分队</h3><p>自动识别队服颜色，也可选择 2、3、4 队，尽量均分人数；再次点击可以重新随机。</p></div></li>
       <li><span class="feature-number" aria-hidden="true">03</span><div><h3>球员备注一起保留</h3><p>迟到、早退和括号里的备注会显示在名字旁，复制结果时也会保留。</p></div></li>
       <li><span class="feature-number" aria-hidden="true">04</span><div><h3>复制结果，发回群里</h3><p>一键复制带队名、人数和球员名单的结果。自动复制失败时，可选取显示的文本手动复制。</p></div></li>
@@ -1319,12 +1308,6 @@
     return kits;
   }
 
-  // 接龙开头的场次信息
-  function parseMatchLine(text) {
-    const line = toLines(text).find((l) => l.trim().startsWith("#"));
-    return line ? line.trim().replace(/^#\s*接龙\s*/, "") : "";
-  }
-
   const input = document.getElementById("roster-input");
   const countEl = document.getElementById("player-count");
   const attendingCountEl = document.getElementById("attending-count");
@@ -1333,7 +1316,6 @@
   const attendanceList = document.getElementById("attendance-list");
   const includeAllBtn = document.getElementById("include-all-btn");
   const teamsEl = document.getElementById("teams");
-  const matchEl = document.getElementById("match-line");
   const copyBtn = document.getElementById("copy-btn");
   const copyStatus = document.getElementById("copy-status");
   const detectedEl = document.getElementById("detected");
@@ -1598,7 +1580,6 @@
     attendingCountEl.textContent = attending;
     excludedCountEl.textContent = attendance.length - attending;
     includeAllBtn.disabled = attending === attendance.length;
-    matchEl.textContent = parseMatchLine(input.value);
     renderDetected(detected, groupCount(detected));
     const hasGroups = lastGroups.length > 0;
     copyBtn.disabled = !hasGroups;

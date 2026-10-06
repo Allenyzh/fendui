@@ -7,10 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test features/team-split/model.test.mjs"
+    "test": "node --test features/team-split/model.test.mjs i18n/i18n.test.mjs"
   },
   "dependencies": {
     "next": "16.3.8",
+    "next-intl": "^4.14.9",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },

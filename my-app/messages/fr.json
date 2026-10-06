@@ -1,0 +1,127 @@
+{
+  "App": {
+    "title": "Répartir les équipes",
+    "subtitle": "Équipes aléatoires",
+    "language": "Langue"
+  },
+  "Feedback": {
+    "paste": "Coller",
+    "pasteDone": "Collé",
+    "pasteFail": "Coller manuellement",
+    "clipboardUnavailable": "Ce navigateur bloque l’accès au presse-papiers",
+    "insecureContext": "L’accès au presse-papiers nécessite HTTPS ou localhost",
+    "clipboardEmpty": "Le presse-papiers est vide",
+    "pasted": "Liste d’inscription collée",
+    "pasteDenied": "L’accès au presse-papiers a été refusé. Collez la liste manuellement.",
+    "pasteManualUnavailable": "Ce navigateur bloque l’accès au presse-papiers. Utilisez « Coller » dans la zone de saisie.",
+    "pasteManualInsecure": "L’accès au presse-papiers nécessite HTTPS ou localhost. Utilisez « Coller » dans la zone de saisie.",
+    "pasteManualDenied": "L’accès au presse-papiers a été refusé. Utilisez « Coller » dans la zone de saisie.",
+    "copied": "Copié dans le presse-papiers",
+    "copyManual": "La copie automatique a été bloquée. Le texte est sélectionné ; utilisez la commande « Copier » de votre appareil."
+  },
+  "Kits": {
+    "colors": {
+      "white": "Blanc",
+      "blue": "Bleu",
+      "red": "Rouge",
+      "black": "Noir",
+      "yellow": "Jaune",
+      "green": "Vert",
+      "orange": "Orange",
+      "purple": "Violet",
+      "gray": "Gris",
+      "pink": "Rose",
+      "cyan": "Cyan"
+    },
+    "teams": {
+      "white": "Équipe blanche",
+      "blue": "Équipe bleue",
+      "red": "Équipe rouge",
+      "black": "Équipe noire",
+      "yellow": "Équipe jaune",
+      "green": "Équipe verte",
+      "orange": "Équipe orange",
+      "purple": "Équipe violette",
+      "gray": "Équipe grise",
+      "pink": "Équipe rose",
+      "cyan": "Équipe cyan"
+    },
+    "fallback": "Équipe {letter}",
+    "copyHeading": "{name} ({count, plural, one {# joueur} other {# joueurs}})"
+  },
+  "Guide": {
+    "eyebrow": "Fonctionnalités",
+    "title": "Guide de répartition",
+    "intro": "Collez la liste complète, confirmez les participants, puis formez des équipes aléatoires.",
+    "close": "Fermer le guide",
+    "attendance": {
+      "title": "Choisir les participants",
+      "new": "Nouveau",
+      "description": "Une personne inscrite ne vient finalement pas ? Décochez son nom pour la marquer comme absente. La liste originale est conservée. Seuls les joueurs cochés sont répartis et copiés. Après un changement, vous serez invité à refaire les équipes.",
+      "example": "Exemple de décompte",
+      "registered": "{count, plural, one {# inscrit} other {# inscrits}}",
+      "included": "{count, plural, one {# participant} other {# participants}}",
+      "excluded": "{count, plural, one {# absent} other {# absents}}"
+    },
+    "featuresLabel": "Fonctionnalités disponibles",
+    "paste": {
+      "title": "Coller toute la liste",
+      "description": "Collez une liste d’inscription WeChat pour détecter les noms. Les numérotations courantes sont reconnues. Vous pouvez aussi saisir un nom par ligne."
+    },
+    "split": {
+      "title": "Répartir par couleur ou nombre d’équipes",
+      "description": "Les couleurs des maillots sont détectées dans le texte. Vous pouvez aussi choisir 2, 3 ou 4 équipes. Les joueurs sont répartis aussi équitablement que possible. Cliquez à nouveau pour mélanger."
+    },
+    "notes": {
+      "title": "Conserver les notes des joueurs",
+      "description": "Les retards, départs anticipés et notes entre parenthèses apparaissent à côté des noms et restent dans les résultats copiés."
+    },
+    "copy": {
+      "title": "Copier et partager les résultats",
+      "description": "Copiez les noms des équipes, les effectifs et les listes de joueurs en un clic. Si la copie automatique échoue, sélectionnez le texte affiché pour le copier manuellement."
+    },
+    "dismiss": "Compris, formons les équipes",
+    "reopenHint": "Touchez l’icône de cookie en bas à droite pour rouvrir ce guide.",
+    "open": "Ouvrir le guide",
+    "openTitle": "Voir le guide"
+  },
+  "Roster": {
+    "label": "Message d’inscription",
+    "placeholder": "Dans WeChat, appuyez longuement sur le message d’inscription → copiez le message entier.\nCollez-le ici tel quel, sans le modifier ni sélectionner uniquement les noms.\n\nVous pouvez aussi utiliser le bouton « Coller » ci-dessus.",
+    "registeredCount": "{count, plural, one {<strong>#</strong> joueur inscrit} other {<strong>#</strong> joueurs inscrits}}",
+    "attendingCount": "{count, plural, one {<strong>#</strong> joueur présent} other {<strong>#</strong> joueurs présents}}",
+    "excludedCount": "{count, plural, one {<strong>#</strong> joueur absent} other {<strong>#</strong> joueurs absents}}",
+    "clear": "Effacer",
+    "groupLabel": "Nombre d’équipes",
+    "automaticGroups": "Par couleur",
+    "teamCount": "{count, plural, one {# équipe} other {# équipes}}",
+    "detectPrompt": "Collez la liste pour répartir les joueurs selon les couleurs de maillot indiquées.",
+    "defaultColors": "Aucune couleur de maillot détectée. Les équipes seront blanche et bleue.",
+    "detectedColors": "Maillots : <colors></colors> → {count, plural, one {# équipe} other {# équipes}}",
+    "split": "Former les équipes",
+    "resplit": "Refaire les équipes",
+    "splitAgain": "Mélanger les équipes"
+  },
+  "Attendance": {
+    "title": "Choisir les participants",
+    "help": "Tout le monde participe par défaut. Décochez un joueur pour le marquer comme absent ; cochez-le à nouveau pour le réintégrer.",
+    "listLabel": "Liste des joueurs",
+    "playerLabel": "{number}. {player}, inclure dans les équipes",
+    "included": "Présent",
+    "excluded": "Absent",
+    "includeAll": "Inclure tout le monde"
+  },
+  "Results": {
+    "title": "Équipes",
+    "copy": "Copier les résultats",
+    "copyDone": "Copié",
+    "copyFail": "Échec de la copie",
+    "emptyRoster": "La liste est vide. Collez le message d’inscription WeChat entier dans la zone de saisie. Les lignes numérotées sont reconnues comme des joueurs, par exemple <code>1. Rain</code>.",
+    "noAttendees": "Aucun joueur ne participe. Cochez les joueurs présents dans la liste.",
+    "rosterChanged": "La liste a changé. Veuillez refaire les équipes.",
+    "readyToSplit": "La liste est prête. Confirmez les participants, puis cliquez sur « Former les équipes ».",
+    "unrecognized": "Aucun joueur n’a été reconnu dans ce texte. Une ligne indique : <code>{sample}</code>. Utilisez un numéro, un séparateur et un nom, par exemple 1. Rain.",
+    "emptyLine": "(vide)",
+    "playerCount": "{count, plural, one {# joueur} other {# joueurs}}"
+  }
+}

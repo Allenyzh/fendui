@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import type { AttendanceEntry } from "../model";
 import { focusRing, linkButton } from "../styles";
 
@@ -14,6 +15,7 @@ export function AttendanceList({
   onToggle,
   onIncludeAll,
 }: AttendanceListProps) {
+  const t = useTranslations("Attendance");
   return (
     <details
       className="overflow-hidden rounded-[7px] border border-line bg-surface-2"
@@ -24,18 +26,18 @@ export function AttendanceList({
       <summary
         className={`cursor-pointer px-3 py-2.5 text-[13px] font-medium ${focusRing}`}
       >
-        调整出场名单
+        {t("title")}
       </summary>
       <p
         className="m-0 px-3 pb-2.5 text-[12px] text-ink-2"
         id="attendance-help"
       >
-        默认全部参加。取消勾选可标记本场不参加，再次勾选即可恢复。
+        {t("help")}
       </p>
       <ol
         className="m-0 max-h-68 list-none overflow-y-auto overscroll-contain border-t border-line-soft p-0"
         id="attendance-list"
-        aria-label="出场名单"
+        aria-label={t("listLabel")}
       >
         {entries.map((entry, index) => (
           <li
@@ -50,7 +52,10 @@ export function AttendanceList({
                 type="checkbox"
                 checked={entry.included}
                 data-index={index}
-                aria-label={`${index + 1}. ${entry.player}，参与分队`}
+                aria-label={t("playerLabel", {
+                  number: index + 1,
+                  player: entry.player,
+                })}
                 aria-describedby="attendance-help"
                 onChange={(event) => onToggle(entry.id, event.target.checked)}
               />
@@ -64,10 +69,10 @@ export function AttendanceList({
                 {entry.player}
               </span>
               <span
-                className={`ml-auto flex-none text-[11px] whitespace-nowrap ${entry.included ? "text-ink-3" : "text-note"}`}
+                className={`ml-auto max-w-[40%] flex-none text-right text-[11px] ${entry.included ? "text-ink-3" : "text-note"}`}
                 aria-hidden="true"
               >
-                {entry.included ? "参加" : "本场不参加"}
+                {entry.included ? t("included") : t("excluded")}
               </span>
             </label>
           </li>
@@ -81,7 +86,7 @@ export function AttendanceList({
           disabled={attendingCount === entries.length}
           onClick={onIncludeAll}
         >
-          全部参加
+          {t("includeAll")}
         </button>
       </div>
     </details>

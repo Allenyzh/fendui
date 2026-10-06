@@ -1,0 +1,127 @@
+{
+  "App": {
+    "title": "接龙分队",
+    "subtitle": "随机分队",
+    "language": "语言"
+  },
+  "Feedback": {
+    "paste": "粘贴",
+    "pasteDone": "已粘贴",
+    "pasteFail": "请手动粘贴",
+    "clipboardUnavailable": "这个浏览器不让网页读剪贴板",
+    "insecureContext": "当前是 http 访问，浏览器只在 https 或 localhost 下才允许读剪贴板",
+    "clipboardEmpty": "剪贴板是空的",
+    "pasted": "已粘贴接龙",
+    "pasteDenied": "剪贴板读取被拒绝，请手动粘贴",
+    "pasteManualUnavailable": "这个浏览器不让网页读剪贴板，请在输入框里长按，选「粘贴」。",
+    "pasteManualInsecure": "浏览器只允许在 https 或 localhost 下读取剪贴板，请在输入框里长按，选「粘贴」。",
+    "pasteManualDenied": "剪贴板读取被拒绝，请在输入框里长按，选「粘贴」。",
+    "copied": "已复制到剪贴板",
+    "copyManual": "自动复制被拦了，文本已选中，请使用设备的「拷贝」命令。"
+  },
+  "Kits": {
+    "colors": {
+      "white": "白",
+      "blue": "蓝",
+      "red": "红",
+      "black": "黑",
+      "yellow": "黄",
+      "green": "绿",
+      "orange": "橙",
+      "purple": "紫",
+      "gray": "灰",
+      "pink": "粉",
+      "cyan": "青"
+    },
+    "teams": {
+      "white": "白队",
+      "blue": "蓝队",
+      "red": "红队",
+      "black": "黑队",
+      "yellow": "黄队",
+      "green": "绿队",
+      "orange": "橙队",
+      "purple": "紫队",
+      "gray": "灰队",
+      "pink": "粉队",
+      "cyan": "青队"
+    },
+    "fallback": "{letter}组",
+    "copyHeading": "{name}（{count}人）"
+  },
+  "Guide": {
+    "eyebrow": "功能介绍",
+    "title": "接龙分队使用指南",
+    "intro": "粘贴完整接龙，确认出场名单，再随机分队。",
+    "close": "关闭功能介绍",
+    "attendance": {
+      "title": "调整出场名单",
+      "new": "新增",
+      "description": "有人报名但确定不来？取消勾选即可标记「本场不参加」，原始接龙保留。分队和复制只包含勾选的人，名单变更后会提示重新分队。",
+      "example": "人数统计示例",
+      "registered": "报名 {count} 人",
+      "included": "参与分队 {count} 人",
+      "excluded": "不参加 {count} 人"
+    },
+    "featuresLabel": "已有功能",
+    "paste": {
+      "title": "整条粘贴，自动识别",
+      "description": "直接粘贴微信接龙，识别人名。支持常见编号格式，也可以一行一个名字。"
+    },
+    "split": {
+      "title": "按队服颜色或队数随机分队",
+      "description": "自动识别队服颜色，也可选择 2、3、4 队，尽量均分人数；再次点击可以重新随机。"
+    },
+    "notes": {
+      "title": "球员备注一起保留",
+      "description": "迟到、早退和括号里的备注会显示在名字旁，复制结果时也会保留。"
+    },
+    "copy": {
+      "title": "复制结果，发回群里",
+      "description": "一键复制带队名、人数和球员名单的结果。自动复制失败时，可选取显示的文本手动复制。"
+    },
+    "dismiss": "知道了，开始分队",
+    "reopenHint": "关闭后，点右下角的 Cookie 图标可再次查看。",
+    "open": "打开功能介绍",
+    "openTitle": "查看功能介绍"
+  },
+  "Roster": {
+    "label": "接龙原文",
+    "placeholder": "在微信里长按那条接龙消息 → 复制整条，\n然后原封不动地粘贴到这里，不用删改、也不用只挑名字。\n\n也可以直接点右上角的「粘贴」。",
+    "registeredCount": "报名<strong>{count}</strong>人",
+    "attendingCount": "参与分队<strong>{count}</strong>人",
+    "excludedCount": "不参加<strong>{count}</strong>人",
+    "clear": "清空",
+    "groupLabel": "分成几队",
+    "automaticGroups": "按颜色",
+    "teamCount": "{count} 队",
+    "detectPrompt": "粘贴接龙后，自动按里面写的队服颜色分队",
+    "defaultColors": "接龙里没写队服颜色，按白 / 蓝分",
+    "detectedColors": "接龙里写了 <colors></colors> → 分 {count} 队",
+    "split": "随机分队",
+    "resplit": "重新分队",
+    "splitAgain": "再次随机分队"
+  },
+  "Attendance": {
+    "title": "调整出场名单",
+    "help": "默认全部参加。取消勾选可标记本场不参加，再次勾选即可恢复。",
+    "listLabel": "出场名单",
+    "playerLabel": "{number}. {player}，参与分队",
+    "included": "参加",
+    "excluded": "本场不参加",
+    "includeAll": "全部参加"
+  },
+  "Results": {
+    "title": "分队结果",
+    "copy": "复制结果",
+    "copyDone": "已复制",
+    "copyFail": "复制失败",
+    "emptyRoster": "还没有名单。把微信接龙整条粘到输入框里就行——带序号的行会被认成报名的人，例如 <code>1. Rain</code>。",
+    "noAttendees": "当前没有人参与分队。请在出场名单中勾选参加的人。",
+    "rosterChanged": "名单已变更，请重新分队。",
+    "readyToSplit": "出场名单已准备好，确认参加的人后点击「随机分队」。",
+    "unrecognized": "这段文字里认不出报名的人。读到的一行是：<code>{sample}</code>。请按「序号 + 分隔符 + 名字」填写，例如 1. Rain。",
+    "emptyLine": "（空）",
+    "playerCount": "{count} 人"
+  }
+}

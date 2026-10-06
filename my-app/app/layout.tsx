@@ -2,8 +2,13 @@ import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import "./globals.css";
 import { themeVariables } from "./theme";
+import { getLocale, getTranslations } from "next-intl/server";
+import { LanguageProvider } from "@/i18n/provider";
 
-export const metadata: Metadata = { title: "接龙分队" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("App");
+  return { title: t("title") };
+}
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -11,9 +16,10 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const locale = await getLocale();
   return (
-    <html lang="zh-CN" className={themeVariables}>
+    <html lang={locale} className={themeVariables}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
@@ -29,7 +35,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         />
       </head>
       <body className="m-0 bg-paper font-sans text-[15px] leading-[1.6] text-ink antialiased [-webkit-text-size-adjust:100%] [text-size-adjust:100%] **:motion-reduce:transition-none! **:motion-reduce:animate-none!">
-        {children}
+        <LanguageProvider initialLocale={locale}>{children}</LanguageProvider>
         <Script id="google-analytics" strategy="afterInteractive">
           {`window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}

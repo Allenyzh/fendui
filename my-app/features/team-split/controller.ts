@@ -6,8 +6,10 @@ import {
   type ClipboardEvent,
 } from "react";
 import { trackEvent } from "./analytics";
+import { useTranslations } from "next-intl";
 import { blockedReason, legacyCopy } from "./clipboard";
-import { useButtonFeedback } from "./feedback";
+import { useButtonFeedback, type FeedbackMessage } from "./feedback";
+import { getKitTeamLabel } from "./presentation";
 import {
   buildKits,
   detectColors,
@@ -15,7 +17,6 @@ import {
   formatGroups,
   getGroupCount,
   groupPlayers,
-  parseMatchLine,
   parsePlayers,
   syncAttendance,
   type AttendanceState,
@@ -33,13 +34,15 @@ interface TeamSplitState {
 }
 
 const subscribeToClipboard = () => () => {};
-const getClipboardHint = () =>
+const getClipboardHint = (): FeedbackMessage | "" =>
   typeof navigator.clipboard?.readText === "function"
     ? ""
-    : blockedReason() + " —— 请在输入框里长按，选「粘贴」。";
-const getServerClipboardHint = () => "";
+    : blockedReason() === "insecureContext" ? "pasteManualInsecure" : "pasteManualUnavailable";
+const getServerClipboardHint = (): FeedbackMessage | "" => "";
 
 export function useTeamSplitController() {
+  const t = useTranslations("Feedback");
+  const kitT = useTranslations("Kits");
   const [state, setState] = useState<TeamSplitState>(() => ({
     roster: "",
     attendance: emptyAttendance(),
@@ -53,8 +56,12 @@ export function useTeamSplitController() {
     getClipboardHint,
     getServerClipboardHint,
   );
-  const [pasteHint, setPasteHint] = useState<string | null>(null);
-  const [rawResult, setRawResult] = useState("");
+  const [pasteHint, setPasteHint] = useState<FeedbackMessage | "" | null>(null);
+  const [showRawResult, setShowRawResult] = useState(false);
+  const formattedResult = formatGroups(state.groups, state.kits, (kit, count) =>
+    kitT("copyHeading", { name: getKitTeamLabel(kit, kitT), count }),
+  );
+  const rawResult = showRawResult ? formattedResult : "";
   const [rawSelectionRequest, setRawSelectionRequest] = useState(0);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const resultsRef = useRef<HTMLElement>(null);
@@ -89,10 +96,11 @@ export function useTeamSplitController() {
     .map((entry) => entry.player);
   const detected = detectColors(state.roster);
   const groupCount = getGroupCount(detected, state.mode);
+  const hintMessage = pasteHint ?? browserPasteHint;
 
   function resetResultFeedback() {
     resultRevision.current++;
-    setRawResult("");
+    setShowRawResult(false);
     copyFeedback.reset();
   }
 
@@ -236,23 +244,21 @@ export function useTeamSplitController() {
     trackEvent("paste_roster");
     if (!navigator.clipboard?.readText) {
       pasteFeedback.signal("fail", blockedReason());
-      setPasteHint(
-        blockedReason() + " —— 请在上面的输入框里长按，选「粘贴」。",
-      );
+      setPasteHint(blockedReason() === "insecureContext" ? "pasteManualInsecure" : "pasteManualUnavailable");
       inputRef.current?.focus();
       return;
     }
     try {
       const text = await navigator.clipboard.readText();
       if (!text.trim()) {
-        pasteFeedback.signal("fail", "剪贴板是空的");
+        pasteFeedback.signal("fail", "clipboardEmpty");
         return;
       }
       changeRoster(text, true);
-      pasteFeedback.signal("done", "已粘贴接龙");
+      pasteFeedback.signal("done", "pasted");
     } catch {
-      pasteFeedback.signal("fail", "剪贴板读取被拒绝，请手动粘贴");
-      setPasteHint("剪贴板读取被拒绝 —— 请在上面的输入框里长按，选「粘贴」。");
+      pasteFeedback.signal("fail", "pasteDenied");
+      setPasteHint("pasteManualDenied");
       inputRef.current?.focus();
     }
   }
@@ -260,14 +266,14 @@ export function useTeamSplitController() {
   async function copy() {
     trackEvent("copy_result");
     if (!state.groups.length) return;
-    const text = formatGroups(state.groups, state.kits);
+    const text = formattedResult;
     const revision = resultRevision.current;
     if (navigator.clipboard?.writeText) {
       try {
         await navigator.clipboard.writeText(text);
         if (revision !== resultRevision.current) return;
-        setRawResult("");
-        copyFeedback.signal("done", "已复制到剪贴板");
+        setShowRawResult(false);
+        copyFeedback.signal("done", "copied");
         return;
       } catch {
         // Continue with the original HTTP / older-browser fallback.
@@ -275,15 +281,15 @@ export function useTeamSplitController() {
     }
     if (revision !== resultRevision.current) return;
     if (legacyCopy(text)) {
-      setRawResult("");
-      copyFeedback.signal("done", "已复制到剪贴板");
+      setShowRawResult(false);
+      copyFeedback.signal("done", "copied");
       return;
     }
-    setRawResult(text);
+    setShowRawResult(true);
     setRawSelectionRequest((request) => request + 1);
     copyFeedback.signal(
       "fail",
-      "自动复制被拦了，文本已选中，长按选「拷贝」",
+      "copyManual",
       true,
     );
   }
@@ -298,14 +304,13 @@ export function useTeamSplitController() {
     attendingCount: attending.length,
     detected,
     groupCount,
-    matchLine: parseMatchLine(state.roster),
     inputRef,
     resultsRef,
     rawRef,
-    pasteHint: pasteHint ?? browserPasteHint,
+    pasteHint: hintMessage ? t(hintMessage) : "",
     rawResult,
-    pasteFeedback,
-    copyFeedback,
+    pasteFeedback: { ...pasteFeedback, message: pasteFeedback.message ? t(pasteFeedback.message) : "" },
+    copyFeedback: { ...copyFeedback, message: copyFeedback.message ? t(copyFeedback.message) : "" },
     changeRoster,
     markPaste,
     toggleAttendance,
