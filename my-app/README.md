@@ -1,13 +1,14 @@
 # 接龙分队
 
-基于父目录 `index.html` 的 Next.js App Router 重构。使用 Tailwind CSS v4 实现原页面外观，保留随机算法、出场选择、剪贴板回退、使用指南和 Google Analytics 事件。通过 `next-intl` 支持简体中文、英语和法语。
+基于原版接龙分队页面的 Next.js App Router 重构。使用 Tailwind CSS v4 实现原页面外观，保留随机算法、出场选择、剪贴板回退、使用指南和 Google Analytics 事件。通过 `next-intl` 支持简体中文、英语和法语。
 
 ## 运行
 
 ```sh
 pnpm dev
 pnpm build
-pnpm start
+pnpm build:pages
+pnpm check:pages
 pnpm lint
 pnpm test
 ```
@@ -18,19 +19,27 @@ pnpm test
 
 页面右上角的下拉选单提供 `中文`、`English`、`Français`。界面、使用指南、剪贴板反馈、队名与复制结果随语言切换；页面标题和 `<html lang>` 同步更新。切换在客户端即时完成，保留输入名单、出场选择、队数与当前随机分队结果。
 
-首次渲染按以下优先级选择语言：用户上次选择（`team-split-locale` cookie，有效期一年）→ 浏览器 `Accept-Language`（按权重匹配，支持 `en-US`、`fr-CA` 等地区变体）→ 简体中文。所有语言仍使用 `/`，没有语言路由或跳转。
+静态 HTML 使用简体中文。JavaScript 加载后按以下优先级恢复语言：用户上次选择（`team-split-locale` cookie，有效期一年）→ 浏览器 `navigator.languages`（按偏好顺序匹配，支持 `en-US`、`fr-CA` 等地区变体）→ 简体中文。首次 hydration 保持与静态 HTML 一致，随后恢复浏览器偏好，因此可能短暂显示中文。所有语言仍使用 `/`，没有语言路由或跳转。
 
 语言仅影响展示。接龙识别规则与业务数据独立于界面语言：英文或法语界面仍能解析中文接龙，姓名和球员备注原样保留。队服以稳定的颜色标识保存，在展示和生成复制文本时才翻译；提示状态也保存语义 key，由当前语言生成文案。
 
 - `i18n/config.ts`：支持语言、下拉选项名称、cookie key 与浏览器语言匹配。
-- `i18n/request.ts`：服务端读取 cookie 和请求头，确定首屏语言。
-- `i18n/provider.tsx`、`language-select.tsx`：客户端切换语言、持久化选择和更新页面语言。
+- `i18n/request.ts`：构建时使用默认语言，不依赖请求头或服务端 cookie。
+- `i18n/provider.tsx`、`language-select.tsx`：hydration 后读取浏览器偏好，客户端切换语言、持久化选择和更新页面语言。
 - `messages/zh-CN.json`、`en.json`、`fr.json`：按 `App`、`Roster`、`Attendance`、`Results`、`Feedback`、`Kits`、`Guide` 等功能组织词典；使用 ICU 插值、复数与富文本标签。
 - `i18n/types.d.ts`：以中文词典约束翻译 key；`i18n/i18n.test.mjs` 检查所有词典的 key、参数和富文本标签一致，并实际格式化消息。
 
 新增语言时，在 `config.ts` 添加语言代码与本语言名称，创建同结构词典并注册到 `messages.ts`，补充需要的浏览器匹配规则和复制标题测试，然后运行 `pnpm test`、`pnpm lint`、`pnpm build`。
 
-服务端读取 cookie 和请求头使 `/` 动态渲染，部署需要 Next.js 运行时（例如 `pnpm build` 后 `pnpm start`），不能直接静态导出。父目录的旧版 `index.html` 和 `CNAME` 保留原样；此次多语言功能属于 `my-app/`。
+## GitHub Pages 发布
+
+`next.config.ts` 开启 `output: "export"`，`pnpm build` 生成 `out/`，无需 Next.js 服务端运行时。`pnpm build:pages` 构建后将完整静态产物同步到仓库根目录，更新 `index.html`、`_next/` 内的 JavaScript/CSS、404 页面和静态数据，并生成 `.nojekyll` 与 `.pages-manifest.json`。再次构建时清理清单中已过期的文件，保留源码和 `CNAME`。
+
+现有 Pages 设置为 **Deploy from a branch → main → / (root)**，自定义域名为 `fendui.allenyzh.com`，所以使用域名根路径，无需 `/fendui` 前缀。改用默认项目地址前必须先调整 `basePath` 并重新构建。
+
+提交 PR 前运行 `pnpm test`、`pnpm lint`、`pnpm build:pages`，从仓库根目录暂存源码与所有生成产物，并将 PR 目标设为 `main`。`pnpm check:pages` 检查源码摘要、产物摘要、`.nojekyll` 和所有 HTML 引用的本地 JavaScript/CSS；源码变更未重新构建或缺少资源会报错。GitHub Actions 在 PR 与 `main` 上执行测试、lint、已提交产物检查与静态构建。合并后由现有 Pages 流程发布。
+
+本地预览：构建后在仓库根目录运行 `python3 -m http.server 8000 --bind 127.0.0.1`，打开 `http://127.0.0.1:8000/`。静态导出不使用 `next start`。
 
 ## MVC 分层
 

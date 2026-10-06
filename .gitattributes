@@ -1,0 +1,9 @@
+/index.html linguist-generated=true
+/index.txt linguist-generated=true
+/404.html linguist-generated=true
+/__next.*.txt linguist-generated=true
+/_not-found.html linguist-generated=true
+/_not-found.txt linguist-generated=true
+/_not-found/** linguist-generated=true
+/_next/** linguist-generated=true -whitespace
+/.pages-manifest.json linguist-generated=true

@@ -1,13 +1,11 @@
-import { cookies, headers } from "next/headers";
 import { getRequestConfig } from "next-intl/server";
-import { localeCookie, resolveLocale } from "./config";
+import { defaultLocale } from "./config";
 import { messagesByLocale } from "./messages";
 
-export default getRequestConfig(async () => {
-  const [cookieStore, requestHeaders] = await Promise.all([cookies(), headers()]);
-  const locale = resolveLocale(
-    cookieStore.get(localeCookie)?.value,
-    requestHeaders.get("accept-language") ?? "",
-  );
-  return { locale, messages: messagesByLocale[locale] };
-});
+// Static hosting cannot read a visitor's cookies or request headers at build time.
+// The client provider restores their language after hydrating this default HTML.
+export default getRequestConfig(() => ({
+  locale: defaultLocale,
+  messages: messagesByLocale[defaultLocale],
+  timeZone: "UTC",
+}));

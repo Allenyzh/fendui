@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "build:pages": "next build && node ../scripts/export-pages.mjs",
+    "check:pages": "node ../scripts/verify-pages.mjs",
     "lint": "eslint",
     "test": "node --test features/team-split/model.test.mjs i18n/i18n.test.mjs"
   },

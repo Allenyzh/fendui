@@ -5,7 +5,7 @@ import test from "node:test";
 import { createTranslator } from "next-intl";
 import { buildKits, formatGroups } from "../features/team-split/model.ts";
 import { getKitColorLabel, getKitTeamLabel } from "../features/team-split/presentation.ts";
-import { defaultLocale, isLocale, languageNames, localeCookie, locales, resolveLocale } from "./config.ts";
+import { defaultLocale, isLocale, languageNames, localeCookie, locales, resolveBrowserLocale, resolveLocale } from "./config.ts";
 
 // Resolve the parser through next-intl's dependencies without depending on pnpm's
 // store paths or adding a second ICU implementation just for these tests.
@@ -99,6 +99,27 @@ test("browser negotiation respects quality, regional variants and header order",
 test("unsupported or absent browser languages fall back to Chinese", () => {
   for (const header of ["", "de-DE, es;q=0.9", "*", "en;q=0, fr;q=0", "fr;q=invalid"]) {
     assert.equal(resolveLocale(undefined, header), "zh-CN", header);
+  }
+});
+
+test("static pages restore exact saved cookies before ordered browser languages", () => {
+  const cases = [
+    ["team-split-locale=en", ["fr-CA", "en-US"], "en"],
+    ["session=abc; team-split-locale=fr; theme=dark", ["en-US"], "fr"],
+    ["team-split-locale=zh%2DCN", ["fr-CA"], "zh-CN"],
+    ["", ["de-DE", "fr-CA", "en-US"], "fr"],
+    ["", ["en-GB", "fr-CA"], "en"],
+    ["", ["zh-Hans-CN", "en-US"], "zh-CN"],
+    ["", [], "zh-CN"],
+    ["", ["de-DE", "es-ES"], "zh-CN"],
+    ["other-team-split-locale=en", ["fr-CA"], "fr"],
+    ["team-split-locale-old=en", ["fr-CA"], "fr"],
+    ["team-split-locale=en-US", ["fr-CA"], "fr"],
+    ["team-split-locale=", ["fr-CA"], "fr"],
+    ["team-split-locale=%E0%A4%A", ["en-US"], "en"],
+  ];
+  for (const [cookies, languages, expected] of cases) {
+    assert.equal(resolveBrowserLocale(cookies, languages), expected, JSON.stringify({ cookies, languages }));
   }
 });
 

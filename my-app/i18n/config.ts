@@ -33,3 +33,20 @@ export function resolveLocale(preference?: string, acceptLanguage = ""): Locale 
   }
   return defaultLocale;
 }
+
+export function resolveBrowserLocale(cookieString: string, languages: readonly string[]): Locale {
+  const savedValue = cookieString
+    .split(";")
+    .map((entry) => entry.trim())
+    .find((entry) => entry.startsWith(`${localeCookie}=`))
+    ?.slice(localeCookie.length + 1);
+
+  let preference: string | undefined;
+  try {
+    preference = savedValue === undefined ? undefined : decodeURIComponent(savedValue);
+  } catch {
+    // Invalid cookie encoding must not block browser language negotiation.
+  }
+
+  return resolveLocale(preference, languages.join(","));
+}

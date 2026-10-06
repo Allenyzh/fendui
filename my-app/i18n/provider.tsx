@@ -1,14 +1,34 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 import { NextIntlClientProvider } from "next-intl";
-import { localeCookie, type Locale } from "./config";
+import { localeCookie, resolveBrowserLocale, type Locale } from "./config";
 import { messagesByLocale } from "./messages";
 
 const LanguageContext = createContext<((locale: Locale) => void) | null>(null);
 
+function subscribeToBrowserLanguage(onChange: () => void) {
+  window.addEventListener("languagechange", onChange);
+  return () => window.removeEventListener("languagechange", onChange);
+}
+
+function getBrowserLocale(): Locale {
+  let cookieString = "";
+  try {
+    cookieString = document.cookie;
+  } catch {
+    // Restricted cookie access still allows browser language negotiation.
+  }
+  const languages = navigator.languages.length ? navigator.languages : [navigator.language];
+  return resolveBrowserLocale(cookieString, languages);
+}
+
 export function LanguageProvider({ initialLocale, children }: { initialLocale: Locale; children: ReactNode }) {
-  const [locale, setLocale] = useState(initialLocale);
+  // React uses the server snapshot during hydration, then reads browser preferences.
+  // This keeps the initial render identical to the exported default-language HTML.
+  const browserLocale = useSyncExternalStore(subscribeToBrowserLanguage, getBrowserLocale, () => initialLocale);
+  const [selectedLocale, setSelectedLocale] = useState<Locale | null>(null);
+  const locale = selectedLocale ?? browserLocale;
   const messages = messagesByLocale[locale];
 
   useEffect(() => {
@@ -17,7 +37,7 @@ export function LanguageProvider({ initialLocale, children }: { initialLocale: L
   }, [locale, messages.App.title]);
 
   function changeLocale(nextLocale: Locale) {
-    setLocale(nextLocale);
+    setSelectedLocale(nextLocale);
     try {
       const secure = window.location.protocol === "https:" ? "; Secure" : "";
       document.cookie = `${localeCookie}=${nextLocale}; Path=/; Max-Age=31536000; SameSite=Lax${secure}`;
@@ -28,7 +48,7 @@ export function LanguageProvider({ initialLocale, children }: { initialLocale: L
 
   return (
     <LanguageContext.Provider value={changeLocale}>
-      <NextIntlClientProvider locale={locale} messages={messages}>
+      <NextIntlClientProvider locale={locale} messages={messages} timeZone="UTC">
         {children}
       </NextIntlClientProvider>
     </LanguageContext.Provider>
