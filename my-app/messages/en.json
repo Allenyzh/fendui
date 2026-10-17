@@ -1,7 +1,7 @@
 {
   "App": {
     "title": "Team Split",
-    "subtitle": "Random Teams",
+    "subtitle": "Random & Balanced Teams",
     "language": "Language"
   },
   "Feedback": {
@@ -52,16 +52,11 @@
   "Guide": {
     "eyebrow": "Features",
     "title": "How to split teams",
-    "intro": "Paste the full signup list, confirm who is playing, then split into random teams.",
+    "intro": "Paste the full signup list, confirm players and abilities, then choose random or balanced teams.",
     "close": "Close the feature guide",
     "attendance": {
       "title": "Choose who is playing",
-      "new": "New",
-      "description": "Someone signed up but can’t make it? Uncheck their name to mark them as sitting out. The original list stays intact. Only checked players are assigned and copied. You’ll be prompted to split again after changing the lineup.",
-      "example": "Example player counts",
-      "registered": "{count, plural, one {# signed up} other {# signed up}}",
-      "included": "{count, plural, one {# playing} other {# playing}}",
-      "excluded": "{count, plural, one {# sitting out} other {# sitting out}}"
+      "description": "Uncheck a player who is sitting out. The original list stays intact. Only checked players are assigned and copied. Lineup changes prompt you to split again."
     },
     "featuresLabel": "Available features",
     "paste": {
@@ -70,7 +65,7 @@
     },
     "split": {
       "title": "Split by shirt color or team count",
-      "description": "Detect shirt colors from the signup text, or choose 2, 3 or 4 teams. Players are distributed as evenly as possible. Click again to reshuffle."
+      "description": "Detect shirt colors from the signup text, or choose 2, 3 or 4 teams. Click the split button again for another lineup."
     },
     "notes": {
       "title": "Keep player notes",
@@ -78,12 +73,20 @@
     },
     "copy": {
       "title": "Copy and share the results",
-      "description": "Copy team names, player counts and lineups with one click. If automatic copying fails, select the displayed text and copy it manually."
+      "description": "Copy team names, player counts, lineups and original notes without ability ratings or team totals. If automatic copying fails, select the displayed text and copy it manually."
     },
     "dismiss": "Got it, let’s split teams",
     "reopenHint": "Tap the cookie icon at the bottom right to open this guide again.",
     "open": "Open the feature guide",
-    "openTitle": "View the feature guide"
+    "openTitle": "View the feature guide",
+    "balanced": {
+      "title": "Balanced teams",
+      "new": "New",
+      "levels": "Beginner 1 / Regular 2 (default) / Strong 3 / Legend 4 (highest).",
+      "split": "Choose Balanced teams to balance ability, with team sizes differing by at most one. Random teams remain available.",
+      "memory": "Ratings are saved in this browser and restored by name next time. Give namesakes distinct names.",
+      "results": "Results show each team’s total ability. Copied lineups exclude ability ratings and team totals."
+    }
   },
   "Roster": {
     "label": "Signup message",
@@ -99,17 +102,33 @@
     "defaultColors": "No shirt colors found. Teams will use white and blue.",
     "detectedColors": "Shirt colors: <colors></colors> → {count, plural, one {# team} other {# teams}}",
     "split": "Split into random teams",
-    "resplit": "Split teams again",
-    "splitAgain": "Reshuffle teams"
+    "resplit": "Split random teams again",
+    "splitAgain": "Reshuffle teams",
+    "strategyLabel": "Splitting method",
+    "strategyRandom": "Random teams",
+    "strategyBalanced": "Balanced teams",
+    "strategyRandomHelp": "Shuffle the included players and keep team sizes as even as possible.",
+    "strategyBalancedHelp": "Balance abilities as closely as possible, with team sizes differing by at most one. Players default to Regular.",
+    "splitBalanced": "Split balanced teams",
+    "resplitBalanced": "Split balanced teams again",
+    "splitBalancedAgain": "Balance teams again"
   },
   "Attendance": {
-    "title": "Choose who is playing",
+    "title": "Players and abilities",
     "help": "Everyone is included by default. Uncheck someone to mark them as sitting out; check them again to include them.",
     "listLabel": "Player lineup",
     "playerLabel": "{number}. {player}, include in teams",
     "included": "Playing",
     "excluded": "Sitting out",
-    "includeAll": "Include everyone"
+    "includeAll": "Include everyone",
+    "abilityHelp": "Choose Legend, Strong, Regular or Beginner. Regular is the default; Legend is the highest level. Copied results exclude ratings and team totals.",
+    "abilityMemory": "Ratings are saved in this browser and matched by name next time. Give namesakes distinct names.",
+    "abilityMemoryUnavailable": "This browser cannot save ability ratings. Changes apply to this session only.",
+    "abilityLabel": "{number}. {player}, ability level",
+    "abilityStrong": "Strong",
+    "abilityRegular": "Regular",
+    "abilityBeginner": "Beginner",
+    "abilityLegend": "Legend"
   },
   "Results": {
     "title": "Teams",
@@ -118,10 +137,12 @@
     "copyFail": "Copy failed",
     "emptyRoster": "No list yet. Paste the whole WeChat signup message into the input box. Numbered lines are recognized as players, for example <code>1. Rain</code>.",
     "noAttendees": "No players are included. Check the players who are taking part in the lineup.",
-    "rosterChanged": "The lineup has changed. Please split the teams again.",
-    "readyToSplit": "The lineup is ready. Confirm who is playing, then select “Split into random teams”.",
+    "rosterChanged": "The lineup, abilities or settings have changed. Please split the teams again.",
+    "readyToSplit": "The lineup is ready. Confirm the players and splitting method, then select the split button.",
     "unrecognized": "No players were recognized in this text. One line reads: <code>{sample}</code>. Use a number, a separator and a name, for example 1. Rain.",
     "emptyLine": "(empty)",
-    "playerCount": "{count, plural, one {# player} other {# players}}"
+    "playerCount": "{count, plural, one {# player} other {# players}}",
+    "teamStrength": "Total ability: {score, plural, one {# point} other {# points}}",
+    "scoreHelp": "Beginner 1 / Regular 2 / Strong 3 / Legend 4. Totals appear only on this page and are excluded from copied results."
   }
 }

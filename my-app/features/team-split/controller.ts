@@ -11,24 +11,35 @@ import { blockedReason, legacyCopy } from "./clipboard";
 import { useButtonFeedback, type FeedbackMessage } from "./feedback";
 import { getKitTeamLabel } from "./presentation";
 import {
+  readAbilityMemory,
+  rememberAbility,
+  restoreAbilities,
+  writeAbilityMemory,
+  type AbilityMemory,
+} from "./ability-memory";
+import {
   buildKits,
   detectColors,
   emptyAttendance,
   formatGroups,
   getGroupCount,
-  groupPlayers,
   parsePlayers,
+  splitTeams,
   syncAttendance,
+  type AbilityRating,
   type AttendanceState,
   type GroupMode,
   type Kit,
+  type SplitStrategy,
 } from "./model";
 
 interface TeamSplitState {
   roster: string;
   attendance: AttendanceState;
   mode: GroupMode;
+  strategy: SplitStrategy;
   groups: string[][];
+  teamScores: number[];
   kits: Kit[];
   needsResplit: boolean;
 }
@@ -47,10 +58,14 @@ export function useTeamSplitController() {
     roster: "",
     attendance: emptyAttendance(),
     mode: "auto",
+    strategy: "random",
     groups: [],
+    teamScores: [],
     kits: [],
     needsResplit: false,
   }));
+  const abilityMemory = useRef<AbilityMemory | null>(null);
+  const [memoryAvailable, setMemoryAvailable] = useState(true);
   const browserPasteHint = useSyncExternalStore(
     subscribeToClipboard,
     getClipboardHint,
@@ -91,9 +106,7 @@ export function useTeamSplitController() {
   }, [rawResult, rawSelectionRequest]);
 
   const attendance = state.attendance.entries;
-  const attending = attendance
-    .filter((entry) => entry.included)
-    .map((entry) => entry.player);
+  const attending = attendance.filter((entry) => entry.included);
   const detected = detectColors(state.roster);
   const groupCount = getGroupCount(detected, state.mode);
   const hintMessage = pasteHint ?? browserPasteHint;
@@ -109,8 +122,20 @@ export function useTeamSplitController() {
       ...next,
       needsResplit: next.needsResplit || next.groups.length > 0,
       groups: [],
+      teamScores: [],
       kits: [],
     };
+  }
+
+  // The roster starts empty, so load browser-only memory on the first input
+  // event. Server rendering and hydration never need to read localStorage.
+  function getAbilityMemory(): AbilityMemory {
+    if (abilityMemory.current === null) {
+      const saved = readAbilityMemory();
+      abilityMemory.current = saved.memory;
+      setMemoryAvailable(saved.available);
+    }
+    return abilityMemory.current;
   }
 
   function changeRoster(
@@ -120,16 +145,50 @@ export function useTeamSplitController() {
     resetAttendanceOnInput.current = false;
     if (roster.trim()) setPasteHint("");
     resetResultFeedback();
+    const memory = getAbilityMemory();
     setState((previous) =>
       invalidateResults({
         ...previous,
         roster,
-        attendance: syncAttendance(
-          parsePlayers(roster),
-          newRoster ? emptyAttendance() : previous.attendance,
+        attendance: restoreAbilities(
+          syncAttendance(
+            parsePlayers(roster),
+            newRoster ? emptyAttendance() : previous.attendance,
+          ),
+          memory,
         ),
       }),
     );
+  }
+
+  function changeAbility(id: number, ability: AbilityRating) {
+    if (!state.attendance.entries.some((entry) => entry.id === id)) return;
+    resetResultFeedback();
+    const memory = rememberAbility(
+      getAbilityMemory(),
+      state.attendance.entries,
+      id,
+      ability,
+    );
+    abilityMemory.current = memory;
+    setMemoryAvailable(writeAbilityMemory(memory));
+    setState((previous) => {
+      const update = (entry: AttendanceState["entries"][number]) =>
+        entry.id === id ? { ...entry, ability } : entry;
+      return invalidateResults({
+        ...previous,
+        attendance: {
+          entries: previous.attendance.entries.map(update),
+          history: previous.attendance.history.map(update),
+        },
+      });
+    });
+  }
+
+  function changeStrategy(strategy: SplitStrategy) {
+    if (strategy === state.strategy) return;
+    resetResultFeedback();
+    setState((previous) => invalidateResults({ ...previous, strategy }));
   }
 
   function markPaste(event: ClipboardEvent<HTMLTextAreaElement>) {
@@ -180,10 +239,14 @@ export function useTeamSplitController() {
   function splitWithMode(mode: GroupMode) {
     resetResultFeedback();
     const count = getGroupCount(detected, mode);
+    const result = attending.length
+      ? splitTeams(attending, count, state.strategy)
+      : { groups: [], scores: [] };
     setState({
       ...state,
       mode,
-      groups: attending.length ? groupPlayers(attending, count) : [],
+      groups: result.groups,
+      teamScores: result.scores,
       kits: buildKits(detected, count),
       needsResplit: false,
     });
@@ -234,6 +297,7 @@ export function useTeamSplitController() {
       roster: "",
       attendance: emptyAttendance(),
       groups: [],
+      teamScores: [],
       kits: [],
       needsResplit: false,
     });
@@ -297,7 +361,10 @@ export function useTeamSplitController() {
   return {
     roster: state.roster,
     mode: state.mode,
+    strategy: state.strategy,
+    memoryAvailable,
     groups: state.groups,
+    teamScores: state.teamScores,
     kits: state.kits,
     needsResplit: state.needsResplit,
     attendance,
@@ -314,6 +381,8 @@ export function useTeamSplitController() {
     changeRoster,
     markPaste,
     toggleAttendance,
+    changeAbility,
+    changeStrategy,
     includeAll,
     changeMode,
     split,

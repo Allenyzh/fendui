@@ -11,11 +11,16 @@ type ColorKit = {
 export type Kit = ColorKit | { key: "custom"; letter: string; color: string };
 
 export type GroupMode = "auto" | "2" | "3" | "4";
+export type AbilityLevel = 1 | 2 | 3 | 4;
+export type AbilityRating = AbilityLevel | null;
+export type SplitStrategy = "random" | "balanced";
+export const DEFAULT_ABILITY: AbilityLevel = 2;
 
 export type AttendanceEntry = {
   id: number;
   player: string;
   included: boolean;
+  ability: AbilityRating;
 };
 
 export type AttendanceState = {
@@ -98,15 +103,117 @@ export function shuffle<T>(array: T[]) {
   return result;
 }
 
-export function groupPlayers(players: string[], groupCount: number) {
+export function groupPlayers<T>(players: T[], groupCount: number): T[][] {
   if (groupCount <= 0) throw new Error("groupCount 必须大于 0");
 
   const shuffledPlayers = shuffle(players);
-  const groups: string[][] = Array.from({ length: groupCount }, () => []);
+  const groups: T[][] = Array.from({ length: groupCount }, () => []);
   shuffledPlayers.forEach((player, index) => {
     groups[index % groupCount].push(player);
   });
   return groups;
+}
+
+function groupBalancedEntries<T extends Pick<AttendanceEntry, "player" | "ability">>(
+  players: T[],
+  groupCount: number,
+): T[][] {
+  if (groupCount <= 0) throw new Error("groupCount 必须大于 0");
+
+  const rankedPlayers = shuffle(
+    players.map((entry) => ({ entry, score: entry.ability ?? DEFAULT_ABILITY })),
+  ).sort((a, b) => b.score - a.score);
+  const groups: typeof rankedPlayers[] = Array.from(
+    { length: groupCount },
+    () => [],
+  );
+  const totals = groups.map(() => 0);
+  const capacities = groups.map((_, index) =>
+    Math.floor(players.length / groupCount) +
+    (index < players.length % groupCount ? 1 : 0),
+  );
+
+  for (const player of rankedPlayers) {
+    let lowestTotal = Infinity;
+    let candidates: number[] = [];
+    groups.forEach((group, index) => {
+      if (group.length === capacities[index]) return;
+      if (totals[index] < lowestTotal) {
+        lowestTotal = totals[index];
+        candidates = [index];
+      } else if (totals[index] === lowestTotal) {
+        candidates.push(index);
+      }
+    });
+    const target = candidates[Math.floor(Math.random() * candidates.length)];
+    groups[target].push(player);
+    totals[target] += player.score;
+  }
+
+  // Swaps preserve team sizes. With a fixed total, reducing the sum of squares
+  // also reduces the squared distance from the shared target team score.
+  while (true) {
+    let bestImprovement = 0;
+    let bestSwap: [number, number, number, number] | undefined;
+    let tiedSwaps = 0;
+    for (let left = 0; left < groups.length; left++) {
+      for (let right = left + 1; right < groups.length; right++) {
+        groups[left].forEach((leftPlayer, leftIndex) => {
+          groups[right].forEach((rightPlayer, rightIndex) => {
+            const difference = rightPlayer.score - leftPlayer.score;
+            const nextLeft = totals[left] + difference;
+            const nextRight = totals[right] - difference;
+            const improvement = totals[left] ** 2 + totals[right] ** 2 -
+              nextLeft ** 2 - nextRight ** 2;
+            if (improvement > bestImprovement) {
+              bestImprovement = improvement;
+              bestSwap = [left, right, leftIndex, rightIndex];
+              tiedSwaps = 1;
+            } else if (improvement > 0 && improvement === bestImprovement) {
+              tiedSwaps++;
+              if (Math.random() < 1 / tiedSwaps) {
+                bestSwap = [left, right, leftIndex, rightIndex];
+              }
+            }
+          });
+        });
+      }
+    }
+    if (!bestSwap) break;
+    const [left, right, leftIndex, rightIndex] = bestSwap;
+    const difference = groups[right][rightIndex].score - groups[left][leftIndex].score;
+    [groups[left][leftIndex], groups[right][rightIndex]] =
+      [groups[right][rightIndex], groups[left][leftIndex]];
+    totals[left] += difference;
+    totals[right] -= difference;
+  }
+
+  return groups.map((group) => group.map(({ entry }) => entry));
+}
+
+export function groupBalancedPlayers(
+  players: Pick<AttendanceEntry, "player" | "ability">[],
+  groupCount: number,
+): string[][] {
+  return groupBalancedEntries(players, groupCount)
+    .map((group) => group.map(({ player }) => player));
+}
+
+export function splitTeams(
+  players: AttendanceEntry[],
+  groupCount: number,
+  strategy: SplitStrategy,
+): { groups: string[][]; scores: number[] } {
+  const teams = strategy === "balanced"
+    ? groupBalancedEntries(players, groupCount)
+    : groupPlayers(players, groupCount);
+  return {
+    groups: teams.map((group) => group.map(({ player }) => player)),
+    scores: teams.map((group) => group.reduce(
+      (total, { ability }) => total + (ability ?? DEFAULT_ABILITY),
+      0,
+    )),
+  };
 }
 
 export function formatGroups(
@@ -219,7 +326,7 @@ export function syncAttendance(
       if (entry) used.add(entry.id);
     }
     if (!entry) {
-      entry = { id: nextId++, player, included: true };
+      entry = { id: nextId++, player, included: true, ability: null };
       added.push(entry);
     }
     const updated = { ...entry, player };

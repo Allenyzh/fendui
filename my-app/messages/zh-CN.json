@@ -1,7 +1,7 @@
 {
   "App": {
     "title": "接龙分队",
-    "subtitle": "随机分队",
+    "subtitle": "随机 · 实力均衡",
     "language": "语言"
   },
   "Feedback": {
@@ -52,16 +52,11 @@
   "Guide": {
     "eyebrow": "功能介绍",
     "title": "接龙分队使用指南",
-    "intro": "粘贴完整接龙，确认出场名单，再随机分队。",
+    "intro": "粘贴完整接龙，确认出场名单和能力，再选择随机或实力均衡分队。",
     "close": "关闭功能介绍",
     "attendance": {
       "title": "调整出场名单",
-      "new": "新增",
-      "description": "有人报名但确定不来？取消勾选即可标记「本场不参加」，原始接龙保留。分队和复制只包含勾选的人，名单变更后会提示重新分队。",
-      "example": "人数统计示例",
-      "registered": "报名 {count} 人",
-      "included": "参与分队 {count} 人",
-      "excluded": "不参加 {count} 人"
+      "description": "取消勾选可标记本场不参加，原始接龙保留。只有勾选的人参与分队和复制；名单变更后会提示重新分队。"
     },
     "featuresLabel": "已有功能",
     "paste": {
@@ -69,8 +64,8 @@
       "description": "直接粘贴微信接龙，识别人名。支持常见编号格式，也可以一行一个名字。"
     },
     "split": {
-      "title": "按队服颜色或队数随机分队",
-      "description": "自动识别队服颜色，也可选择 2、3、4 队，尽量均分人数；再次点击可以重新随机。"
+      "title": "按队服颜色或队数分队",
+      "description": "自动识别接龙中的队服颜色，也可选择 2、3、4 队。再次点击分队按钮可换一组阵容。"
     },
     "notes": {
       "title": "球员备注一起保留",
@@ -78,12 +73,20 @@
     },
     "copy": {
       "title": "复制结果，发回群里",
-      "description": "一键复制带队名、人数和球员名单的结果。自动复制失败时，可选取显示的文本手动复制。"
+      "description": "一键复制队名、人数、球员名单和原有备注，不显示能力档位或总实力分。自动复制失败时，可选取显示的文本手动复制。"
     },
     "dismiss": "知道了，开始分队",
     "reopenHint": "关闭后，点右下角的 Cookie 图标可再次查看。",
     "open": "打开功能介绍",
-    "openTitle": "查看功能介绍"
+    "openTitle": "查看功能介绍",
+    "balanced": {
+      "title": "实力均衡分队",
+      "new": "新增",
+      "levels": "入门 1 / 普通 2（默认）/ 较强 3 / 球王 4（最强）。",
+      "split": "选择「实力均衡」按评分分队，人数相差不超过 1 人；也可继续随机分队。",
+      "memory": "能力档位自动记在当前浏览器，下次按姓名恢复。同名请用不同称呼。",
+      "results": "结果展示每队总实力分；复制名单不含能力档位或总分。"
+    }
   },
   "Roster": {
     "label": "接龙原文",
@@ -99,17 +102,33 @@
     "defaultColors": "接龙里没写队服颜色，按白 / 蓝分",
     "detectedColors": "接龙里写了 <colors></colors> → 分 {count} 队",
     "split": "随机分队",
-    "resplit": "重新分队",
-    "splitAgain": "再次随机分队"
+    "resplit": "重新随机分队",
+    "splitAgain": "再次随机分队",
+    "strategyLabel": "分队方式",
+    "strategyRandom": "随机分队",
+    "strategyBalanced": "实力均衡",
+    "strategyRandomHelp": "随机打乱参加的人，各队人数尽量相等。",
+    "strategyBalancedHelp": "按能力尽量平衡各队实力，人数相差不超过 1 人；能力默认普通。",
+    "splitBalanced": "均衡分队",
+    "resplitBalanced": "重新均衡分队",
+    "splitBalancedAgain": "再次均衡分队"
   },
   "Attendance": {
-    "title": "调整出场名单",
+    "title": "出场名单与能力",
     "help": "默认全部参加。取消勾选可标记本场不参加，再次勾选即可恢复。",
     "listLabel": "出场名单",
     "playerLabel": "{number}. {player}，参与分队",
     "included": "参加",
     "excluded": "本场不参加",
-    "includeAll": "全部参加"
+    "includeAll": "全部参加",
+    "abilityHelp": "能力分为球王 / 较强 / 普通 / 入门，默认普通，球王为最高档。复制结果不含档位或总实力分。",
+    "abilityMemory": "档位自动记在当前浏览器，下次按姓名匹配。同名球员请用不同称呼。",
+    "abilityMemoryUnavailable": "当前浏览器无法保存能力档位，设置仅本次有效。",
+    "abilityLabel": "{number}. {player}的能力档位",
+    "abilityStrong": "较强",
+    "abilityRegular": "普通",
+    "abilityBeginner": "入门",
+    "abilityLegend": "球王"
   },
   "Results": {
     "title": "分队结果",
@@ -118,10 +137,12 @@
     "copyFail": "复制失败",
     "emptyRoster": "还没有名单。把微信接龙整条粘到输入框里就行——带序号的行会被认成报名的人，例如 <code>1. Rain</code>。",
     "noAttendees": "当前没有人参与分队。请在出场名单中勾选参加的人。",
-    "rosterChanged": "名单已变更，请重新分队。",
-    "readyToSplit": "出场名单已准备好，确认参加的人后点击「随机分队」。",
+    "rosterChanged": "名单、能力或分队设置已变更，请重新分队。",
+    "readyToSplit": "出场名单已准备好。确认参加的人和分队方式后，点击分队按钮。",
     "unrecognized": "这段文字里认不出报名的人。读到的一行是：<code>{sample}</code>。请按「序号 + 分隔符 + 名字」填写，例如 1. Rain。",
     "emptyLine": "（空）",
-    "playerCount": "{count} 人"
+    "playerCount": "{count} 人",
+    "teamStrength": "总实力 {score} 分",
+    "scoreHelp": "入门 1 / 普通 2 / 较强 3 / 球王 4；总分仅页面显示，复制不含分数。"
   }
 }
