@@ -55,7 +55,7 @@ export function TeamResults({
 }) {
   const t = useTranslations("Results");
   const tKits = useTranslations("Kits");
-  const { resultsRef, copyFeedback, groups, copy, kits, rawRef, rawResult } =
+  const { resultsRef, copyFeedback, groups, teamScores, copy, kits, rawRef, rawResult } =
     controller;
   return (
     <section id="results" ref={resultsRef}>
@@ -88,6 +88,14 @@ export function TeamResults({
           />
         </div>
       </div>
+      {groups.length > 0 && (
+        <p
+          className="-mt-1 mb-3.5 text-[12px] leading-[1.65] text-ink-3 mobile:mb-3"
+          id="team-score-help"
+        >
+          {t("scoreHelp")}
+        </p>
+      )}
       <div
         id="teams"
         className="grid grid-cols-[repeat(auto-fit,minmax(190px,1fr))] items-start gap-4 compact:grid-cols-[repeat(auto-fit,minmax(146px,1fr))] compact:gap-2.5"
@@ -113,6 +121,13 @@ export function TeamResults({
                   <span className="ml-auto text-[12px] text-ink-3 tabular-nums compact:text-[11px]">
                     {t("playerCount", { count: group.length })}
                   </span>
+                  <p
+                    className="m-0 w-full text-[12px] font-medium text-ink-2 tabular-nums compact:text-[11px]"
+                    data-team-score={teamScores[index]}
+                    aria-describedby="team-score-help"
+                  >
+                    {t("teamStrength", { score: teamScores[index] })}
+                  </p>
                 </div>
                 <ol className="m-0 list-none px-3.5 pt-1.5 pb-3.5 [counter-reset:player] compact:px-2.75 compact:pt-1 compact:pb-2.75">
                   {group.map((player, playerIndex) => {

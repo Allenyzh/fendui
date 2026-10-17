@@ -1,7 +1,7 @@
 {
   "App": {
     "title": "Répartir les équipes",
-    "subtitle": "Équipes aléatoires",
+    "subtitle": "Équipes aléatoires ou équilibrées",
     "language": "Langue"
   },
   "Feedback": {
@@ -52,16 +52,11 @@
   "Guide": {
     "eyebrow": "Fonctionnalités",
     "title": "Guide de répartition",
-    "intro": "Collez la liste complète, confirmez les participants, puis formez des équipes aléatoires.",
+    "intro": "Collez la liste complète, confirmez les participants et les niveaux, puis choisissez une répartition aléatoire ou équilibrée.",
     "close": "Fermer le guide",
     "attendance": {
       "title": "Choisir les participants",
-      "new": "Nouveau",
-      "description": "Une personne inscrite ne vient finalement pas ? Décochez son nom pour la marquer comme absente. La liste originale est conservée. Seuls les joueurs cochés sont répartis et copiés. Après un changement, vous serez invité à refaire les équipes.",
-      "example": "Exemple de décompte",
-      "registered": "{count, plural, one {# inscrit} other {# inscrits}}",
-      "included": "{count, plural, one {# participant} other {# participants}}",
-      "excluded": "{count, plural, one {# absent} other {# absents}}"
+      "description": "Décochez les joueurs absents. La liste originale est conservée. Seuls les joueurs cochés sont répartis et copiés. Après un changement, vous serez invité à refaire les équipes."
     },
     "featuresLabel": "Fonctionnalités disponibles",
     "paste": {
@@ -70,7 +65,7 @@
     },
     "split": {
       "title": "Répartir par couleur ou nombre d’équipes",
-      "description": "Les couleurs des maillots sont détectées dans le texte. Vous pouvez aussi choisir 2, 3 ou 4 équipes. Les joueurs sont répartis aussi équitablement que possible. Cliquez à nouveau pour mélanger."
+      "description": "Les couleurs des maillots sont détectées dans le texte. Vous pouvez aussi choisir 2, 3 ou 4 équipes. Cliquez à nouveau sur le bouton de répartition pour changer les équipes."
     },
     "notes": {
       "title": "Conserver les notes des joueurs",
@@ -78,12 +73,20 @@
     },
     "copy": {
       "title": "Copier et partager les résultats",
-      "description": "Copiez les noms des équipes, les effectifs et les listes de joueurs en un clic. Si la copie automatique échoue, sélectionnez le texte affiché pour le copier manuellement."
+      "description": "Copiez les noms des équipes, les effectifs, les joueurs et leurs notes, sans afficher les niveaux ni les totaux des équipes. Si la copie automatique échoue, sélectionnez le texte affiché pour le copier manuellement."
     },
     "dismiss": "Compris, formons les équipes",
     "reopenHint": "Touchez l’icône de cookie en bas à droite pour rouvrir ce guide.",
     "open": "Ouvrir le guide",
-    "openTitle": "Voir le guide"
+    "openTitle": "Voir le guide",
+    "balanced": {
+      "title": "Équipes équilibrées",
+      "new": "Nouveau",
+      "levels": "Débutant 1 / Standard 2 (par défaut) / Avancé 3 / Légende 4 (le plus élevé).",
+      "split": "Choisissez le mode Équilibré pour équilibrer les niveaux, avec un écart maximal d’un joueur entre les équipes. Le mode Aléatoire reste disponible.",
+      "memory": "Les niveaux sont enregistrés dans ce navigateur et retrouvés par nom. Distinguez les homonymes par des noms différents.",
+      "results": "Les résultats affichent le total de chaque équipe. Les listes copiées ne contiennent ni les niveaux ni les totaux."
+    }
   },
   "Roster": {
     "label": "Message d’inscription",
@@ -98,18 +101,34 @@
     "detectPrompt": "Collez la liste pour répartir les joueurs selon les couleurs de maillot indiquées.",
     "defaultColors": "Aucune couleur de maillot détectée. Les équipes seront blanche et bleue.",
     "detectedColors": "Maillots : <colors></colors> → {count, plural, one {# équipe} other {# équipes}}",
-    "split": "Former les équipes",
-    "resplit": "Refaire les équipes",
-    "splitAgain": "Mélanger les équipes"
+    "split": "Répartir au hasard",
+    "resplit": "Répartir à nouveau au hasard",
+    "splitAgain": "Mélanger à nouveau les équipes",
+    "strategyLabel": "Mode de répartition",
+    "strategyRandom": "Aléatoire",
+    "strategyBalanced": "Équilibré",
+    "strategyRandomHelp": "Mélangez les participants en gardant des effectifs aussi proches que possible.",
+    "strategyBalancedHelp": "Équilibrez au mieux les niveaux, avec un écart maximal d’un joueur entre les équipes. Le niveau par défaut est Standard.",
+    "splitBalanced": "Équilibrer les équipes",
+    "resplitBalanced": "Rééquilibrer les équipes",
+    "splitBalancedAgain": "Équilibrer à nouveau les équipes"
   },
   "Attendance": {
-    "title": "Choisir les participants",
+    "title": "Participants et niveaux",
     "help": "Tout le monde participe par défaut. Décochez un joueur pour le marquer comme absent ; cochez-le à nouveau pour le réintégrer.",
     "listLabel": "Liste des joueurs",
     "playerLabel": "{number}. {player}, inclure dans les équipes",
     "included": "Présent",
     "excluded": "Absent",
-    "includeAll": "Inclure tout le monde"
+    "includeAll": "Inclure tout le monde",
+    "abilityHelp": "Choisissez Légende, Avancé, Standard ou Débutant. Standard est le niveau par défaut ; Légende est le plus élevé. Les niveaux et les totaux des équipes ne sont pas copiés.",
+    "abilityMemory": "Les niveaux sont enregistrés dans ce navigateur et retrouvés par nom. Distinguez les homonymes par des noms différents.",
+    "abilityMemoryUnavailable": "Ce navigateur ne peut pas enregistrer les niveaux. Les changements valent uniquement pour cette session.",
+    "abilityLabel": "{number}. {player}, niveau de jeu",
+    "abilityStrong": "Avancé",
+    "abilityRegular": "Standard",
+    "abilityBeginner": "Débutant",
+    "abilityLegend": "Légende"
   },
   "Results": {
     "title": "Équipes",
@@ -118,10 +137,12 @@
     "copyFail": "Échec de la copie",
     "emptyRoster": "La liste est vide. Collez le message d’inscription WeChat entier dans la zone de saisie. Les lignes numérotées sont reconnues comme des joueurs, par exemple <code>1. Rain</code>.",
     "noAttendees": "Aucun joueur ne participe. Cochez les joueurs présents dans la liste.",
-    "rosterChanged": "La liste a changé. Veuillez refaire les équipes.",
-    "readyToSplit": "La liste est prête. Confirmez les participants, puis cliquez sur « Former les équipes ».",
+    "rosterChanged": "Les participants, les niveaux ou les réglages ont changé. Veuillez refaire les équipes.",
+    "readyToSplit": "La liste est prête. Confirmez les participants et le mode de répartition, puis cliquez sur le bouton de répartition.",
     "unrecognized": "Aucun joueur n’a été reconnu dans ce texte. Une ligne indique : <code>{sample}</code>. Utilisez un numéro, un séparateur et un nom, par exemple 1. Rain.",
     "emptyLine": "(vide)",
-    "playerCount": "{count, plural, one {# joueur} other {# joueurs}}"
+    "playerCount": "{count, plural, one {# joueur} other {# joueurs}}",
+    "teamStrength": "Niveau total : {score, plural, one {# point} other {# points}}",
+    "scoreHelp": "Débutant 1 / Standard 2 / Avancé 3 / Légende 4. Les totaux sont affichés uniquement sur cette page et ne sont pas copiés."
   }
 }

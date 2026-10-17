@@ -16,6 +16,7 @@ const fieldLabel =
   "flex flex-wrap items-baseline justify-between gap-3 text-[12px] font-medium tracking-[.12em] text-ink-3";
 
 const GROUP_MODES: GroupMode[] = ["auto", "2", "3", "4"];
+const SPLIT_STRATEGIES = ["random", "balanced"] as const;
 
 export function RosterPanel({
   controller,
@@ -38,6 +39,10 @@ export function RosterPanel({
     clear,
     toggleAttendance,
     includeAll,
+    strategy,
+    changeStrategy,
+    changeAbility,
+    memoryAvailable,
     mode,
     changeMode,
     detected,
@@ -133,10 +138,37 @@ export function RosterPanel({
         entries={attendance}
         attendingCount={attendingCount}
         onToggle={toggleAttendance}
+        onAbilityChange={changeAbility}
         onIncludeAll={includeAll}
+        memoryAvailable={memoryAvailable}
       />
 
       <div className="h-px bg-line-soft" />
+
+      <fieldset className="min-w-0 border-0 p-0" aria-describedby="strategy-help">
+        <legend className={`${fieldLabel} mb-2.5`}>{t("strategyLabel")}</legend>
+        <div className="grid grid-cols-2 gap-1.5 mobile:gap-2" id="strategy-seg">
+          {SPLIT_STRATEGIES.map((value) => (
+            <label key={value} className="min-w-0">
+              <input
+                type="radio"
+                className="peer absolute size-px opacity-0"
+                name="strategy"
+                id={`strategy-${value}`}
+                value={value}
+                checked={strategy === value}
+                onChange={() => changeStrategy(value)}
+              />
+              <span className="flex h-full min-h-11 cursor-pointer touch-manipulation items-center justify-center rounded-md border border-line bg-surface-2 px-2 py-2 text-center text-[14px] leading-tight font-medium text-ink-2 wrap-anywhere select-none [-webkit-tap-highlight-color:transparent] hover:border-ink-3 active:bg-accent-soft peer-checked:border-accent peer-checked:bg-accent-soft peer-checked:text-accent peer-focus-visible:outline-2 peer-focus-visible:outline-solid peer-focus-visible:outline-accent peer-focus-visible:outline-offset-2">
+                {value === "balanced" ? t("strategyBalanced") : t("strategyRandom")}
+              </span>
+            </label>
+          ))}
+        </div>
+        <p className="mt-2 text-[12px] leading-[1.65] text-ink-2" id="strategy-help">
+          {strategy === "balanced" ? t("strategyBalancedHelp") : t("strategyRandomHelp")}
+        </p>
+      </fieldset>
 
       <div className={fieldLabel}>
         <span>{t("groupLabel")}</span>
@@ -198,10 +230,10 @@ export function RosterPanel({
         onClick={split}
       >
         {hasGroups
-          ? t("splitAgain")
+          ? t(strategy === "balanced" ? "splitBalancedAgain" : "splitAgain")
           : needsResplit
-            ? t("resplit")
-            : t("split")}
+            ? t(strategy === "balanced" ? "resplitBalanced" : "resplit")
+            : t(strategy === "balanced" ? "splitBalanced" : "split")}
       </button>
     </section>
   );

@@ -8,7 +8,7 @@
     "build:pages": "next build && node ../scripts/export-pages.mjs",
     "check:pages": "node ../scripts/verify-pages.mjs",
     "lint": "eslint",
-    "test": "node --test features/team-split/model.test.mjs i18n/i18n.test.mjs"
+    "test": "node --test features/team-split/model.test.mjs features/team-split/ability-memory.test.mjs i18n/i18n.test.mjs"
   },
   "dependencies": {
     "next": "16.3.8",

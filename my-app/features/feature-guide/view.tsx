@@ -73,28 +73,23 @@ export default function FeatureGuide() {
         <div className="min-h-0 overflow-y-auto overscroll-contain px-6 py-5 compact:px-4.5 compact:py-4">
           <section
             className="rounded-[10px] border border-accent bg-accent-soft p-4"
-            aria-labelledby="feature-attendance-title"
+            aria-labelledby="feature-balanced-title"
           >
             <h3
               className="mb-2 flex flex-wrap items-center gap-2 text-[16px] font-bold"
-              id="feature-attendance-title"
+              id="feature-balanced-title"
             >
-              {t("attendance.title")}{" "}
+              {t("balanced.title")}{" "}
               <span className="rounded-sm bg-accent px-1.75 py-0.5 text-[10px] font-medium text-accent-ink">
-                {t("attendance.new")}
+                {t("balanced.new")}
               </span>
             </h3>
-            <p className="text-[13px] leading-[1.8] text-ink-2">
-              {t("attendance.description")}
-            </p>
-            <div
-              className="mt-3 flex flex-wrap gap-x-3 gap-y-1.5 text-[12px] font-medium text-accent"
-              aria-label={t("attendance.example")}
-            >
-              <span>{t("attendance.registered", { count: 21 })}</span>
-              <span>{t("attendance.included", { count: 19 })}</span>
-              <span>{t("attendance.excluded", { count: 2 })}</span>
-            </div>
+            <ul className="m-0 list-disc space-y-1.5 pl-4.5 text-[13px] leading-[1.75] text-ink-2">
+              <li>{t("balanced.levels")}</li>
+              <li>{t("balanced.split")}</li>
+              <li>{t("balanced.memory")}</li>
+              <li>{t("balanced.results")}</li>
+            </ul>
           </section>
           <ul
             className="mt-5 grid list-none gap-4 p-0 [&_h3]:mb-0.75 [&_h3]:text-[14px] [&_h3]:font-medium [&_p]:text-[12.5px] [&_p]:leading-[1.75] [&_p]:text-ink-2"
@@ -122,9 +117,9 @@ export default function FeatureGuide() {
                 02
               </span>
               <div>
-                <h3>{t("split.title")}</h3>
+                <h3>{t("attendance.title")}</h3>
                 <p>
-                  {t("split.description")}
+                  {t("attendance.description")}
                 </p>
               </div>
             </li>
@@ -134,6 +129,18 @@ export default function FeatureGuide() {
                 aria-hidden="true"
               >
                 03
+              </span>
+              <div>
+                <h3>{t("split.title")}</h3>
+                <p>{t("split.description")}</p>
+              </div>
+            </li>
+            <li className="flex items-start gap-3">
+              <span
+                className="grid size-7 flex-none place-items-center rounded-[7px] bg-surface-2 font-condensed text-[16px] text-ink-3"
+                aria-hidden="true"
+              >
+                04
               </span>
               <div>
                 <h3>{t("notes.title")}</h3>
@@ -147,7 +154,7 @@ export default function FeatureGuide() {
                 className="grid size-7 flex-none place-items-center rounded-[7px] bg-surface-2 font-condensed text-[16px] text-ink-3"
                 aria-hidden="true"
               >
-                04
+                05
               </span>
               <div>
                 <h3>{t("copy.title")}</h3>
